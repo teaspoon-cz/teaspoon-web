@@ -44,6 +44,10 @@ async function handleSubmit(request, env) {
 
   // 2. Turnstile
   const turnstileToken = formData.get("cf-turnstile-response") || "";
+  if (!env.TURNSTILE_SECRET_KEY) {
+    console.error("Turnstile: TURNSTILE_SECRET_KEY is not set");
+    return jsonResponse({ error: "Configuration error" }, 500);
+  }
   let tsData;
   try {
     const tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v1/siteverify", {
@@ -51,18 +55,18 @@ async function handleSubmit(request, env) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
     });
+    const tsBody = await tsRes.text();
+    console.log("Turnstile raw:", tsRes.status, tsBody.substring(0, 300));
     if (!tsRes.ok) {
-      const text = await tsRes.text();
-      console.error("Turnstile HTTP error:", tsRes.status, text);
       return jsonResponse({ error: "Chyba ověření" }, 500);
     }
-    tsData = await tsRes.json();
+    tsData = JSON.parse(tsBody);
   } catch (err) {
-    console.error("Turnstile verification error:", err?.message);
+    console.error("Turnstile error:", err?.message);
     return jsonResponse({ error: "Chyba ověření" }, 500);
   }
-  if (!tsData.success) {
-    console.error("Turnstile rejected:", JSON.stringify(tsData["error-codes"]));
+  if (!tsData?.success) {
+    console.error("Turnstile rejected:", JSON.stringify(tsData?.["error-codes"]));
     return jsonResponse({ error: "Ověření se nezdařilo" }, 400);
   }
 
