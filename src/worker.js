@@ -6,17 +6,22 @@
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
+    try {
+      const url = new URL(request.url);
 
-    if (request.method === "POST" && url.pathname === "/api/submit") {
-      return handleSubmit(request, env);
+      if (request.method === "POST" && url.pathname === "/api/submit") {
+        return await handleSubmit(request, env);
+      }
+
+      if (request.method === "GET" && url.pathname === "/api/formular/entries") {
+        return await handleEntries(request, env);
+      }
+
+      return env.ASSETS.fetch(request);
+    } catch (err) {
+      console.error("Unhandled Worker exception:", err?.message, err?.stack);
+      return jsonResponse({ error: "Internal server error", detail: err?.message }, 500);
     }
-
-    if (request.method === "GET" && url.pathname === "/api/formular/entries") {
-      return handleEntries(request, env);
-    }
-
-    return env.ASSETS.fetch(request);
   },
 };
 
@@ -39,13 +44,20 @@ async function handleSubmit(request, env) {
 
   // 2. Turnstile
   const turnstileToken = formData.get("cf-turnstile-response") || "";
-  const tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v1/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `secret=${encodeURIComponent(env.TURNSTILE_SECRET_KEY)}&response=${encodeURIComponent(turnstileToken)}`,
-  });
-  const tsData = await tsRes.json();
+  let tsData;
+  try {
+    const tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v1/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `secret=${encodeURIComponent(env.TURNSTILE_SECRET_KEY)}&response=${encodeURIComponent(turnstileToken)}`,
+    });
+    tsData = await tsRes.json();
+  } catch (err) {
+    console.error("Turnstile verification error:", err?.message);
+    return jsonResponse({ error: "Chyba ověření" }, 500);
+  }
   if (!tsData.success) {
+    console.error("Turnstile rejected:", JSON.stringify(tsData["error-codes"]));
     return jsonResponse({ error: "Ověření se nezdařilo" }, 400);
   }
 
