@@ -8563,11 +8563,11 @@ div.wpcf7-mail-sent-ok {
 ============================================================================= */
 @font-face {
 	font-family: 'movedo-icons';
-	src:url('../fonts/movedo-icons.eot?v=1.0.0');
-	src:url('../fonts/movedo-icons.eot?#iefix&v=1.0.0') format('embedded-opentype'),
-		url('../fonts/movedo-icons.woff?v=1.0.0') format('woff'),
-		url('../fonts/movedo-icons.ttf?v=1.0.0') format('truetype'),
-		url('../fonts/movedo-icons.svg?v=1.0.0#movedo-icons') format('svg');
+	src:url('../fonts/movedo-icons.eot');
+	src:url('../fonts/movedo-icons.eot') format('embedded-opentype'),
+		url('../fonts/movedo-icons.woff') format('woff'),
+		url('../fonts/movedo-icons.ttf') format('truetype'),
+		url('../fonts/movedo-icons.svg') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }

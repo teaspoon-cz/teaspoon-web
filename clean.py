@@ -31,6 +31,77 @@ def _clean_filename(name: str) -> str:
     return _FNAME_QUERY_RE.sub("", name)
 
 
+def _add_icons(soup: BeautifulSoup) -> None:
+    """Insert Defaults icon-font <i> elements at contextually appropriate places."""
+
+    def icon(cls: str):
+        return soup.new_tag("i", attrs={"class": cls})
+
+    def prepend_icon(tag, icon_cls: str) -> None:
+        tag.insert(0, " ")
+        tag.insert(0, icon(icon_cls))
+
+    # Top-bar phone number (all pages)
+    for li in soup.find_all("li", class_="grve-topbar-item-text"):
+        p = li.find("p")
+        if p and "+420" in p.get_text():
+            prepend_icon(p, "Defaults-phone")
+
+    # Contact info block (kontakt page)
+    for p in soup.find_all("p"):
+        text = p.get_text(strip=True)
+        if text.startswith("telefon:"):
+            prepend_icon(p, "Defaults-phone")
+        elif text.startswith("email:"):
+            prepend_icon(p, "Defaults-envelope")
+        elif text.startswith("IČO:"):
+            prepend_icon(p, "Defaults-building-o")
+        elif text.startswith("Bankovní spojení:"):
+            prepend_icon(p, "Defaults-credit-card")
+
+    # Stat counters (o-mne page)
+    _COUNTER_ICONS = {
+        "klientů": "Defaults-users",
+        "zkušeností": "Defaults-calendar",
+        "srdce": "Defaults-heart",
+    }
+    for h3 in soup.find_all("h3", class_="grve-counter-title"):
+        text = h3.get_text(strip=True)
+        for keyword, icon_cls in _COUNTER_ICONS.items():
+            if keyword in text:
+                prepend_icon(h3, icon_cls)
+                break
+
+    # Timeline icons (o-mne page) — plugin left these divs empty
+    _TIMELINE_ICONS = {
+        "1990": "Defaults-book",            # začínám se učit anglicky
+        "1997": "Defaults-file-text",       # první kniha v angličtině
+        "2003": "Defaults-plane",           # Oxford, UK
+        "2004": "Defaults-pencil",          # začínám učit
+        "2005": "Defaults-users",           # plný úvazek
+        "2009": "Defaults-university",      # diplomová práce, Soluň
+        "2010": "Defaults-globe",           # španělština
+        "2012": "Defaults-graduation-cap",  # Mgr.
+        "2013": "Defaults-certificate",     # CELTA
+        "2014": "Defaults-sun-o",           # letní škola Winchester
+        "2015": "Defaults-star",            # Culford Summer School
+        "2017": "Defaults-coffee",          # vznik Teaspoon Clubu
+    }
+    for icon_div in soup.find_all("div", class_="ult-timeline-icon"):
+        header_block = icon_div.parent.find_next_sibling(
+            "div", class_="timeline-header-block"
+        )
+        if not header_block:
+            continue
+        year_h3 = header_block.find("h3", class_="ult-timeline-title")
+        if not year_h3:
+            continue
+        icon_cls = _TIMELINE_ICONS.get(year_h3.get_text(strip=True))
+        if icon_cls:
+            icon_div.clear()
+            icon_div.append(icon(icon_cls))
+
+
 def clean_css(src_path: Path) -> str:
     text = src_path.read_text(encoding="utf-8", errors="replace")
     return _CSS_URL_QUERY_RE.sub(r"\1", text)
@@ -90,6 +161,19 @@ def clean_html(src_path: Path) -> tuple[str, int]:
         tag.decompose()
         removed += 1
 
+    # --- Inject self-hosted Google Fonts stylesheet (replaces CDN dependency) ---
+    head = soup.find("head")
+    if head:
+        # Remove the dns-prefetch hint for fonts.googleapis.com (no longer needed)
+        for tag in soup.find_all("link", rel="dns-prefetch"):
+            if "fonts.googleapis" in tag.get("href", ""):
+                tag.decompose()
+        gf_link = soup.new_tag(
+            "link", rel="stylesheet",
+            href="/fonts/google-fonts.css", type="text/css"
+        )
+        head.insert(0, gf_link)
+
     # --- Strip all query strings from local <link href> and <script src> ---
     for tag in soup.find_all(["link", "script"]):
         for attr in ("href", "src"):
@@ -105,6 +189,9 @@ def clean_html(src_path: Path) -> tuple[str, int]:
         for attr, val in list(tag.attrs.items()):
             if isinstance(val, str) and "teaspoon.cz" in val:
                 tag[attr] = _INTERNAL_PREFIX_RE.sub("", val)
+
+    # --- Add Defaults icon-font elements ---
+    _add_icons(soup)
 
     # --- Rewrite absolute internal URLs inside <style> and <script> tag bodies ---
     for tag in soup.find_all(["style", "script"]):
@@ -128,9 +215,7 @@ def process(dry_run: bool) -> None:
         sys.exit(f"Source directory '{SRC_DIR}' not found.")
 
     if not dry_run:
-        if DST_DIR.exists():
-            shutil.rmtree(DST_DIR)
-        DST_DIR.mkdir(parents=True)
+        DST_DIR.mkdir(parents=True, exist_ok=True)
 
     total_files = 0
     total_removed = 0
