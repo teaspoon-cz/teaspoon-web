@@ -14,9 +14,12 @@ DST_DIR = Path("web-clean")
 
 # Strips any query string from a URL value (local only)
 _QUERY_RE = re.compile(r"\?[^\"'#\s]+")
-_INTERNAL_PREFIX_RE = re.compile(r"https?://teaspoon\.cz")
+# Matches https://, http://, //, and JSON-escaped https:\/\/ forms
+_INTERNAL_PREFIX_RE = re.compile(r"(?:https?:)?(?:\\?/){2}teaspoon\.cz")
 # wget encodes '?' as U+00BF (¿) in Windows filenames; also handle literal '?'
 _FNAME_QUERY_RE = re.compile(r"[?¿].*$")
+# Strips query strings from CSS url() tokens, preserving any fragment (#id)
+_CSS_URL_QUERY_RE = re.compile(r"(url\(['\"]?[^'\")?#\s]+)\?[^'\")\s]*")
 
 
 def _is_external(url: str) -> bool:
@@ -26,6 +29,11 @@ def _is_external(url: str) -> bool:
 def _clean_filename(name: str) -> str:
     """Strip wget's query-string suffix from a filename."""
     return _FNAME_QUERY_RE.sub("", name)
+
+
+def clean_css(src_path: Path) -> str:
+    text = src_path.read_text(encoding="utf-8", errors="replace")
+    return _CSS_URL_QUERY_RE.sub(r"\1", text)
 
 
 def clean_html(src_path: Path) -> tuple[str, int]:
@@ -91,14 +99,17 @@ def clean_html(src_path: Path) -> tuple[str, int]:
                 if new_val != val:
                     tag[attr] = new_val
 
-    # --- Rewrite absolute internal URLs to relative ---
+    # --- Rewrite absolute internal URLs to relative (all attributes) ---
+    # Covers href, src, action, srcset, style, content, data-*, poster, etc.
     for tag in soup.find_all(True):
-        for attr in ("href", "src", "action"):
-            val = tag.get(attr)
-            if val:
-                new_val = _INTERNAL_PREFIX_RE.sub("", val)
-                if new_val != val:
-                    tag[attr] = new_val
+        for attr, val in list(tag.attrs.items()):
+            if isinstance(val, str) and "teaspoon.cz" in val:
+                tag[attr] = _INTERNAL_PREFIX_RE.sub("", val)
+
+    # --- Rewrite absolute internal URLs inside <style> and <script> tag bodies ---
+    for tag in soup.find_all(["style", "script"]):
+        if tag.string and "teaspoon.cz" in tag.string:
+            tag.string.replace_with(_INTERNAL_PREFIX_RE.sub("", tag.string))
 
     # Preserve doctype if present
     doctype = ""
@@ -140,6 +151,10 @@ def process(dry_run: bool) -> None:
             if not dry_run:
                 dst_path.parent.mkdir(parents=True, exist_ok=True)
                 dst_path.write_text(cleaned, encoding="utf-8")
+        elif clean_suffix == ".css":
+            if not dry_run:
+                dst_path.parent.mkdir(parents=True, exist_ok=True)
+                dst_path.write_text(clean_css(src_path), encoding="utf-8")
         else:
             if not dry_run:
                 dst_path.parent.mkdir(parents=True, exist_ok=True)
