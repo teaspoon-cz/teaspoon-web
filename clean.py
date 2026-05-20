@@ -12,12 +12,20 @@ from bs4 import BeautifulSoup, Doctype
 SRC_DIR = Path("web")
 DST_DIR = Path("web-clean")
 
-_VER_RE = re.compile(r"\?ver=[\w.+-]+")
+# Strips any query string from a URL value (local only)
+_QUERY_RE = re.compile(r"\?[^\"'#\s]+")
 _INTERNAL_PREFIX_RE = re.compile(r"https?://teaspoon\.cz")
+# wget encodes '?' as U+00BF (¿) in Windows filenames; also handle literal '?'
+_FNAME_QUERY_RE = re.compile(r"[?¿].*$")
 
 
 def _is_external(url: str) -> bool:
     return url.startswith("http://") or url.startswith("https://")
+
+
+def _clean_filename(name: str) -> str:
+    """Strip wget's query-string suffix from a filename."""
+    return _FNAME_QUERY_RE.sub("", name)
 
 
 def clean_html(src_path: Path) -> tuple[str, int]:
@@ -74,12 +82,12 @@ def clean_html(src_path: Path) -> tuple[str, int]:
         tag.decompose()
         removed += 1
 
-    # --- Strip ?ver= from local <link href> and <script src> ---
+    # --- Strip all query strings from local <link href> and <script src> ---
     for tag in soup.find_all(["link", "script"]):
         for attr in ("href", "src"):
             val = tag.get(attr)
             if val and not _is_external(val):
-                new_val = _VER_RE.sub("", val)
+                new_val = _QUERY_RE.sub("", val)
                 if new_val != val:
                     tag[attr] = new_val
 
@@ -121,9 +129,10 @@ def process(dry_run: bool) -> None:
             continue
 
         rel = src_path.relative_to(SRC_DIR)
-        dst_path = DST_DIR / rel
+        dst_path = DST_DIR / rel.parent / _clean_filename(rel.name)
 
-        if src_path.suffix.lower() in (".html", ".htm"):
+        clean_suffix = Path(_clean_filename(rel.name)).suffix.lower()
+        if clean_suffix in (".html", ".htm"):
             cleaned, removed = clean_html(src_path)
             total_files += 1
             total_removed += removed
