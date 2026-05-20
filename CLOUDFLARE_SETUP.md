@@ -20,7 +20,7 @@
    - Cloudflare Pages → your project → Settings → Environment variables
    - Add (mark as **Encrypted**):
      - `TURNSTILE_SECRET_KEY` — the Turnstile Secret Key from step 3
-     - `ADMIN_PASSWORD` — choose a strong password for `/admin/`
+     - `ADMIN_PASSWORD` — choose a strong password for `/formular/`
 
 5. **Connect repository in Cloudflare Pages**
    - Cloudflare dashboard → Workers & Pages → Create application → Pages → Connect to Git
@@ -32,4 +32,4 @@
 
 6. **Test**
    - Visit `/kontakt/` and submit the contact form; check for success message
-   - Visit `/admin/`, enter the password, and verify the submission appears in the table
+   - Visit `/formular/`, enter the password, and verify the submission appears in the table
