@@ -48,9 +48,14 @@ async function handleSubmit(request, env) {
   try {
     const tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v1/siteverify", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${encodeURIComponent(env.TURNSTILE_SECRET_KEY)}&response=${encodeURIComponent(turnstileToken)}`,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
     });
+    if (!tsRes.ok) {
+      const text = await tsRes.text();
+      console.error("Turnstile HTTP error:", tsRes.status, text);
+      return jsonResponse({ error: "Chyba ověření" }, 500);
+    }
     tsData = await tsRes.json();
   } catch (err) {
     console.error("Turnstile verification error:", err?.message);
