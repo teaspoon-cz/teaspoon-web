@@ -50,17 +50,29 @@ async function handleSubmit(request, env) {
   }
   let tsData;
   try {
-    const tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v1/siteverify", {
+    const tsBody = JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken });
+    const tsHeaders = { "Content-Type": "application/json" };
+
+    let tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v1/siteverify", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
+      headers: tsHeaders,
+      body: tsBody,
+      redirect: "manual",
     });
-    const tsBody = await tsRes.text();
-    console.log("Turnstile raw:", tsRes.status, tsBody.substring(0, 300));
+
+    // Manually follow redirect, preserving POST
+    if (tsRes.status >= 300 && tsRes.status < 400) {
+      const location = tsRes.headers.get("location");
+      console.log("Turnstile redirected to:", location);
+      tsRes = await fetch(location, { method: "POST", headers: tsHeaders, body: tsBody });
+    }
+
+    const tsText = await tsRes.text();
+    console.log("Turnstile:", tsRes.status, tsText.substring(0, 200));
     if (!tsRes.ok) {
       return jsonResponse({ error: "Chyba ověření" }, 500);
     }
-    tsData = JSON.parse(tsBody);
+    tsData = JSON.parse(tsText);
   } catch (err) {
     console.error("Turnstile error:", err?.message);
     return jsonResponse({ error: "Chyba ověření" }, 500);
