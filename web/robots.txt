@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: http://teaspoon.cz/hunx.php?sitemap.xml
