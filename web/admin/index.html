@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Přihlášení – Teaspoon Admin</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f4efea;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 360px;
+  }
+  h1 {
+    margin: 0 0 1.5rem;
+    font-size: 1.25rem;
+    color: #3e3f75;
+    text-align: center;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: #444;
+  }
+  input[type="password"] {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="password"]:focus {
+    border-color: #3e3f75;
+  }
+  button {
+    margin-top: 1.25rem;
+    width: 100%;
+    padding: 0.65rem;
+    background: #af1b1d;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button:hover { background: #8c1416; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Teaspoon Admin</h1>
+  <form method="GET" action="/api/admin/entries">
+    <label for="password">Heslo</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required/>
+    <button type="submit">Přihlásit</button>
+  </form>
+</div>
+</body>
+</html>
