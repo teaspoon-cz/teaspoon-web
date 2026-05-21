@@ -207,7 +207,7 @@ async function handleEntries(request, env) {
     </tr>`);
     compactCards.push(
       `<div class="cc">`
-      + `<div class="cc-hd"><strong>#${rowNum} ${esc(formatPrague(row.submitted_at))}</strong></div>`
+      + `<div class="cc-hd"><strong>#${rowNum}</strong> ${esc(formatPrague(row.submitted_at))}</div>`
       + `<div><em>Formulář:</em> ${esc(row.form_name)}</div>`
       + (row.club_selection ? `<div><em>Klub:</em> ${esc(row.club_selection)}</div>` : '')
       + `<div><em>Kontakt:</em><div class="cc-indent">${kontakt}</div></div>`
