@@ -114,7 +114,7 @@ async function handleSubmit(request, env) {
         "Authorization": `Bearer ${env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Teaspoon web <onboarding@resend.dev>",
+        from: "Teaspoon web <noreply@teaspoon.cz>",
         to: ["radomir.cernoch@gmail.com"],
         reply_to: email,
         subject: `Nový formulář: ${form_name}`,
