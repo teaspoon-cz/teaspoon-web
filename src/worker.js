@@ -197,8 +197,7 @@ async function handleEntries(request, env) {
 
   const tableRows = [];
   const compactCards = [];
-  rows.forEach((row, idx) => {
-    const rowNum = totalCount - offset - idx;
+  rows.forEach((row) => {
     const kontakt = [
       [esc(row.first_name), esc(row.last_name)].filter(Boolean).join(' '),
       esc(row.street),
@@ -207,7 +206,7 @@ async function handleEntries(request, env) {
       esc(row.phone),
     ].filter(Boolean).join('<br>');
     tableRows.push(`<tr>
-      <td><input type="checkbox" class="row-cb" data-id="${row.id}" onchange="onCbChange(this)">${rowNum}</td>
+      <td><input type="checkbox" class="row-cb" data-id="${row.id}" onchange="onCbChange(this)">${row.id}</td>
       <td>${esc(formatPrague(row.submitted_at))}</td>
       <td>${esc(row.form_name)}</td>
       <td>${kontakt}</td>
@@ -216,7 +215,7 @@ async function handleEntries(request, env) {
     </tr>`);
     compactCards.push(
       `<div class="cc">`
-      + `<div class="cc-hd"><label><input type="checkbox" class="row-cb" data-id="${row.id}" onchange="onCbChange(this)"><strong>#${rowNum}</strong></label> ${esc(formatPrague(row.submitted_at))}</div>`
+      + `<div class="cc-hd"><label><input type="checkbox" class="row-cb" data-id="${row.id}" onchange="onCbChange(this)"><strong>#${row.id}</strong></label> ${esc(formatPrague(row.submitted_at))}</div>`
       + `<div><em>Formulář:</em> ${esc(row.form_name)}</div>`
       + (row.club_selection ? `<div><em>Klub:</em> ${esc(row.club_selection)}</div>` : '')
       + `<div><em>Kontakt:</em><div class="cc-indent">${kontakt}</div></div>`
