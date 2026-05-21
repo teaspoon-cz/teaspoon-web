@@ -72,14 +72,19 @@ async function handleSubmit(request, env) {
   }
 
   // 3. Parse fields
-  const first_name = formData.get("first_name") || "";
-  const last_name  = formData.get("last_name")  || "";
-  const email      = formData.get("email")      || "";
-  const phone      = formData.get("phone")      || "";
-  const message    = formData.get("message")    || "";
-  const form_name  = formData.get("_form")      || "contact";
+  const first_name     = formData.get("first_name")     || "";
+  const last_name      = formData.get("last_name")      || "";
+  const email          = formData.get("email")          || "";
+  const phone          = formData.get("phone")          || "";
+  const message        = formData.get("message")        || "";
+  const street         = formData.get("street")         || "";
+  const city           = formData.get("city")           || "";
+  const postal_code    = formData.get("postal_code")    || "";
+  const notes          = formData.get("notes")          || "";
+  const club_selection = formData.get("club_selection") || "";
+  const form_name      = formData.get("_form")          || "contact";
 
-  const excluded = new Set(["web_site", "h-captcha-response", "_form", "first_name", "last_name", "email", "phone", "message"]);
+  const excluded = new Set(["web_site", "h-captcha-response", "_form", "first_name", "last_name", "email", "phone", "message", "street", "city", "postal_code", "notes", "club_selection"]);
   const rawObj = {};
   for (const [k, v] of formData.entries()) {
     if (!excluded.has(k)) rawObj[k] = v;
@@ -92,9 +97,9 @@ async function handleSubmit(request, env) {
 
   try {
     await env.DB.prepare(
-      `INSERT INTO submissions (submitted_at, form_name, first_name, last_name, email, phone, message, raw_data, ip_address, user_agent)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(submitted_at, form_name, first_name, last_name, email, phone, message, JSON.stringify(rawObj), ip_address, user_agent).run();
+      `INSERT INTO submissions (submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection, raw_data, ip_address, user_agent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection, JSON.stringify(rawObj), ip_address, user_agent).run();
   } catch (err) {
     console.error("D1 insert error:", err);
     return jsonResponse({ error: "Database error" }, 500);
@@ -106,11 +111,11 @@ async function handleSubmit(request, env) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        personalizations: [{ to: [{ email: "teaspooncz@gmail.com" }] }],
+        personalizations: [{ to: [{ email: "radomir.cernoch@gmail.com" }] }],
         from: { email: "noreply@teaspoon.cz", name: "Teaspoon web" },
         reply_to: { email },
-        subject: "Nová zpráva z webu",
-        content: [{ type: "text/plain", value: `Jméno: ${first_name} ${last_name}\nEmail: ${email}\nTelefon: ${phone}\n\n${message}` }],
+        subject: `Nový formulář: ${form_name}`,
+        content: [{ type: "text/plain", value: buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection }) }],
       }),
     });
     if (!mailRes.ok) console.error("MailChannels error:", mailRes.status, await mailRes.text());
@@ -163,7 +168,12 @@ async function handleEntries(request, env) {
       <td>${esc(row.last_name)}</td>
       <td>${esc(row.email)}</td>
       <td>${esc(row.phone)}</td>
-      <td style="max-width:300px;white-space:pre-wrap">${esc(row.message)}</td>
+      <td style="max-width:220px;white-space:pre-wrap">${esc(row.message)}</td>
+      <td>${esc(row.street)}</td>
+      <td>${esc(row.city)}</td>
+      <td>${esc(row.postal_code)}</td>
+      <td style="max-width:180px;white-space:pre-wrap">${esc(row.notes)}</td>
+      <td>${esc(row.club_selection)}</td>
       <td>${esc(row.ip_address)}</td>
       <td><details><summary>raw</summary><pre style="font-size:.75rem;background:#f5f5f5;padding:.5em;border-radius:4px;overflow:auto;max-width:400px">${esc(rawFormatted)}</pre></details></td>
     </tr>`;
@@ -194,8 +204,8 @@ details summary:hover{text-decoration:underline}
 <h1>Přijaté zprávy</h1>
 <p class="meta">Celkem: <strong>${rows.length}</strong> (max. 200, od nejnovějšího)</p>
 <div class="wrap"><table>
-<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>IP</th><th>Data</th></tr></thead>
-<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="10" class="empty">Žádné záznamy.</td></tr>'}</tbody>
+<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>Ulice</th><th>Město</th><th>PSČ</th><th>Poznámka</th><th>Klub</th><th>IP</th><th>Data</th></tr></thead>
+<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="15" class="empty">Žádné záznamy.</td></tr>'}</tbody>
 </table></div>
 </body></html>`;
 
@@ -205,6 +215,22 @@ details summary:hover{text-decoration:underline}
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection }) {
+  const lines = [
+    `Formulář: ${form_name}`,
+    `Jméno: ${first_name} ${last_name}`,
+    `Email: ${email}`,
+    `Telefon: ${phone}`,
+  ];
+  if (club_selection) lines.push(`Klub: ${club_selection}`);
+  if (street)         lines.push(`Ulice: ${street}`);
+  if (city)           lines.push(`Město: ${city}`);
+  if (postal_code)    lines.push(`PSČ: ${postal_code}`);
+  if (message)        lines.push(``, `Zpráva:`, message);
+  if (notes)          lines.push(``, `Poznámka:`, notes);
+  return lines.join("\n");
+}
 
 function jsonResponse(body, status) {
   return new Response(JSON.stringify(body), {
