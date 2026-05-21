@@ -13,6 +13,5 @@ CREATE TABLE IF NOT EXISTS submissions (
   club_selection TEXT,
   raw_data       TEXT,
   ip_address     TEXT,
-  user_agent     TEXT,
-  hidden         INTEGER NOT NULL DEFAULT 0
+  user_agent     TEXT
 );
