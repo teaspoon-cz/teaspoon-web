@@ -210,8 +210,8 @@ async function handleEntries(request, env) {
       + `<div class="cc-hd"><strong>#${rowNum} ${esc(formatPrague(row.submitted_at))}</strong></div>`
       + `<div><em>Formulář:</em> ${esc(row.form_name)}</div>`
       + (row.club_selection ? `<div><em>Klub:</em> ${esc(row.club_selection)}</div>` : '')
-      + `<div><em>Kontakt:</em><br>${kontakt}</div>`
-      + (row.message ? `<div><em>Zpráva:</em><br><span class="cc-msg">${esc(row.message)}</span></div>` : '')
+      + `<div><em>Kontakt:</em><div class="cc-indent">${kontakt}</div></div>`
+      + (row.message ? `<div><em>Zpráva:</em><div class="cc-indent cc-msg">${esc(row.message)}</div></div>` : '')
       + `</div>`
     );
   });
@@ -263,6 +263,7 @@ tr:nth-child(even) td{background:#f5f5fa}
 .cc-hd{margin-bottom:.35rem}
 .cc>div{margin:.2rem 0}
 .cc em{color:#555}
+.cc-indent{padding-left:1em}
 .cc-msg{white-space:pre-wrap}
 @media(max-width:600px){.wrap{display:none}.compact{display:block}}
 </style>
