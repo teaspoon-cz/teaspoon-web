@@ -18,6 +18,10 @@ export default {
         return await handleEntries(request, env);
       }
 
+      if (request.method === "POST" && url.pathname === "/api/hide") {
+        return await handleHide(request, env);
+      }
+
       return env.ASSETS.fetch(request);
     } catch (err) {
       console.error("Unhandled Worker exception:", err?.message, err?.stack);
@@ -152,7 +156,7 @@ async function handleEntries(request, env) {
 
   let totalCount = 0;
   try {
-    const countResult = await env.DB.prepare("SELECT COUNT(*) AS cnt FROM submissions").first();
+    const countResult = await env.DB.prepare("SELECT COUNT(*) AS cnt FROM submissions WHERE hidden = 0").first();
     totalCount = countResult?.cnt ?? 0;
   } catch (err) {
     console.error("D1 count error:", err);
@@ -183,7 +187,7 @@ async function handleEntries(request, env) {
   let rows = [];
   try {
     const result = await env.DB.prepare(
-      "SELECT * FROM submissions ORDER BY submitted_at DESC LIMIT ? OFFSET ?"
+      "SELECT * FROM submissions WHERE hidden = 0 ORDER BY submitted_at DESC LIMIT ? OFFSET ?"
     ).bind(pageSize, offset).all();
     rows = result.results || [];
   } catch (err) {
@@ -203,7 +207,7 @@ async function handleEntries(request, env) {
       esc(row.phone),
     ].filter(Boolean).join('<br>');
     tableRows.push(`<tr>
-      <td>${rowNum}</td>
+      <td><input type="checkbox" class="row-cb" data-id="${row.id}" onchange="onCbChange(this)">${rowNum}</td>
       <td>${esc(formatPrague(row.submitted_at))}</td>
       <td>${esc(row.form_name)}</td>
       <td>${kontakt}</td>
@@ -212,7 +216,7 @@ async function handleEntries(request, env) {
     </tr>`);
     compactCards.push(
       `<div class="cc">`
-      + `<div class="cc-hd"><strong>#${rowNum}</strong> ${esc(formatPrague(row.submitted_at))}</div>`
+      + `<div class="cc-hd"><label><input type="checkbox" class="row-cb" data-id="${row.id}" onchange="onCbChange(this)"><strong>#${rowNum}</strong></label> ${esc(formatPrague(row.submitted_at))}</div>`
       + `<div><em>Formulář:</em> ${esc(row.form_name)}</div>`
       + (row.club_selection ? `<div><em>Klub:</em> ${esc(row.club_selection)}</div>` : '')
       + `<div><em>Kontakt:</em><div class="cc-indent">${kontakt}</div></div>`
@@ -240,7 +244,7 @@ async function handleEntries(request, env) {
 *,*::before,*::after{box-sizing:border-box}
 body{font-family:system-ui,sans-serif;font-size:.875rem;margin:0;padding:1.5rem;background:#fafafa;color:#222}
 h1{margin:0 0 .5rem;font-size:1.4rem}
-.meta{color:#666;margin-bottom:.75rem;font-size:.8rem}
+.meta{display:flex;justify-content:space-between;align-items:center;color:#666;margin-bottom:.75rem;font-size:.8rem}
 .wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;background:#fff;border:1px solid #ddd;border-radius:6px;overflow:hidden}
 th{background:#3e3f75;color:#fff;padding:.6rem .75rem;text-align:left;font-weight:600;white-space:nowrap}
@@ -270,12 +274,19 @@ tr:nth-child(even) td{background:#f5f5fa}
 .cc em{color:#555}
 .cc-indent{padding-left:1em}
 .cc-msg{white-space:pre-wrap}
+.trash-btn{background:none;border:1px solid #d9a0a0;color:#af1b1d;border-radius:3px;padding:.25rem .45rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;font-size:.78rem;line-height:1}
+.trash-btn:hover:not(:disabled){background:#fbeaea;border-color:#af1b1d}
+.trash-btn:disabled{color:#ccc;border-color:#e0d0d0;cursor:default}
+.row-cb{accent-color:#af1b1d;cursor:pointer;margin-right:.35rem;vertical-align:middle}
+tr.selected td{background:#fbeaea !important}
+tr.selected:hover td{background:#f5d8d8 !important}
+.cc.selected{background:#fbeaea !important}
 @media(max-width:600px){.wrap{display:none}.compact{display:block}}
 </style>
 </head>
 <body>
 <h1>Přijaté zprávy</h1>
-<p class="meta">Celkem: <strong>${totalCount}</strong> záznamů &nbsp;·&nbsp; Stránka <strong>${page}</strong> z <strong>${totalPages}</strong> &nbsp;·&nbsp; ${pageSize} na stránku</p>
+<div class="meta"><span>Celkem: <strong>${totalCount}</strong> záznamů &nbsp;·&nbsp; Stránka <strong>${page}</strong> z <strong>${totalPages}</strong> &nbsp;·&nbsp; ${pageSize} na stránku</span><button id="hide-btn" class="trash-btn" onclick="hideSelected()" disabled title="Skrýt vybrané záznamy"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Skrýt vybrané</button></div>
 ${paginationHtml}
 <div class="wrap"><table>
 <thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Kontakt</th><th>Zpráva</th><th>Klub</th></tr></thead>
@@ -286,9 +297,65 @@ ${paginationHtml}
   ${paginationHtml}
   ${jumpForm}
 </div>
+<script>
+const _pw=${JSON.stringify(provided).replace(/<\//g, '<\\/')};
+function onCbChange(cb){
+  const row=cb.closest('tr')||cb.closest('.cc');
+  if(row)row.classList.toggle('selected',cb.checked);
+  document.getElementById('hide-btn').disabled=!document.querySelector('.row-cb:checked');
+}
+async function hideSelected(){
+  const cbs=Array.from(document.querySelectorAll('.row-cb:checked'));
+  if(!cbs.length)return;
+  const n=cbs.length;
+  if(!confirm('Opravdu skrýt '+(n===1?'1 záznam':n<5?n+' záznamy':n+' záznamů')+'?'))return;
+  const btn=document.getElementById('hide-btn');
+  btn.disabled=true;
+  try{
+    const r=await fetch('/api/hide',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'password='+encodeURIComponent(_pw)+'&ids='+encodeURIComponent(cbs.map(c=>c.dataset.id).join(','))});
+    if(r.ok){cbs.forEach(c=>{const el=c.closest('tr')||c.closest('.cc');if(el)el.remove();});}
+    else{alert('Chyba při skrývání záznamů.');btn.disabled=false;}
+  }catch{alert('Chyba sítě.');btn.disabled=false;}
+}
+</script>
 </body></html>`;
 
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+}
+
+// ---------------------------------------------------------------------------
+// POST /api/hide
+// ---------------------------------------------------------------------------
+
+async function handleHide(request, env) {
+  let body;
+  try { body = await request.formData(); } catch {
+    return jsonResponse({ error: "Invalid form data" }, 400);
+  }
+  const provided = body.get("password") || "";
+  const enc = new TextEncoder();
+  const a = enc.encode(provided);
+  const b = enc.encode(env.ADMIN_PASSWORD || "");
+  let authorized = false;
+  if (a.length === b.length) {
+    try { authorized = await crypto.subtle.timingSafeEqual(a, b); } catch {}
+  }
+  if (!authorized) return jsonResponse({ error: "Unauthorized" }, 401);
+
+  const rawIds = (body.get("ids") || "")
+    .split(",")
+    .map(s => parseInt(s.trim(), 10))
+    .filter(n => !isNaN(n) && n >= 1);
+  if (!rawIds.length) return jsonResponse({ error: "No valid ids" }, 400);
+
+  try {
+    const placeholders = rawIds.map(() => "?").join(",");
+    await env.DB.prepare(`UPDATE submissions SET hidden = 1 WHERE id IN (${placeholders})`).bind(...rawIds).run();
+  } catch (err) {
+    console.error("D1 hide error:", err);
+    return jsonResponse({ error: "Database error" }, 500);
+  }
+  return jsonResponse({ ok: true }, 200);
 }
 
 function buildPagination(page, totalPages, url) {
