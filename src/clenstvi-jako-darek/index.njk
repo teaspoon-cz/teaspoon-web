@@ -7,95 +7,119 @@ hcaptcha: true
 ---
 
 <div class="post-211 page type-page status-publish hentry" id="page-211">
-<div class="grve-section grve-row-section grve-fullwidth-background grve-padding-top-1x grve-padding-bottom-1x grve-bg-none"><div class="grve-container"><div class="grve-row grve-bookmark grve-columns-gap-30"><div class="grve-column wpb_column grve-column-1-6"><div class="grve-column-wrapper"></div></div><div class="grve-column wpb_column grve-column-2-3"><div class="grve-column-wrapper"><div class="grve-element grve-text vc_custom_1631953336935">
-<div class="container clearfix">
-<div class="section-title clearfix medium text-left">
-<h3 class="heading">Dejte svým drahým a blízkým<br/>
-
-
-MLUVENÍ JAKO DÁREK!</h3>
-<div class="excerpt">
-<p>Napište mi, který z kurzů by vašim blízkým nejvíce vyhovoval nebo mi zavolejte (<strong>+420 605 477 433</strong>) a můžeme některý vybrat společně…</p>
-</div>
-</div>
-</div>
-</div>
-<div class="grve-element grve-text vc_custom_1631953209105">
-<form action="/api/submit" method="POST" id="gift-form">
-  <input type="hidden" name="_form" value="gift">
-  <div style="display:none;overflow:hidden;height:0;width:0;">
-    <label>Web Site</label><input autocomplete="off" name="web_site" type="text" value=""/>
-  </div>
-  <div class="form-group">
-    <label class="control-label" for="first_name">Jméno <span style="color:#ee0000;">*</span></label>
-    <input class="form-control" id="first_name" name="first_name" placeholder="Sem napište Vaše jméno..." required type="text"/>
-  </div>
-  <div class="form-group">
-    <label class="control-label" for="last_name">Příjmení <span style="color:#ee0000;">*</span></label>
-    <input class="form-control" id="last_name" name="last_name" placeholder="...sem Vaše příjmení..." required type="text"/>
-  </div>
-  <div class="form-group">
-    <label class="control-label" for="email">Emailová adresa <span style="color:#ee0000;">*</span></label>
-    <input class="form-control" id="email" name="email" placeholder="...sem Váš email..." required type="email"/>
-  </div>
-  <div class="form-group">
-    <label class="control-label" for="phone">Telefon</label>
-    <input class="form-control" id="phone" name="phone" placeholder="...případně telefon" type="tel"/>
-  </div>
-  <div class="form-group">
-    <label class="control-label">Myslím, že by vyhovoval: <span style="color:#ee0000;">*</span></label>
-    <div class="radio">
-      <label><input name="club_selection" required type="radio" value="Starter Club (začátečníci)"/> Starter Club (začátečníci)</label>
+  <div class="grve-section grve-row-section grve-fullwidth-background grve-padding-top-1x grve-padding-bottom-1x grve-bg-none">
+    <div class="grve-container">
+      <div class="grve-row grve-bookmark grve-columns-gap-30">
+        <div class="grve-column wpb_column grve-column-1-6">
+          <div class="grve-column-wrapper"></div>
+        </div>
+        <div class="grve-column wpb_column grve-column-2-3">
+          <div class="grve-column-wrapper">
+            <div class="grve-element grve-text vc_custom_1631953336935">
+              <div class="container clearfix">
+                <div class="section-title clearfix medium text-left">
+                  <h3 class="heading">Dejte svým drahým a blízkým<br />
+                    MLUVENÍ JAKO DÁREK!</h3>
+                  <div class="excerpt">
+                    <p>Napište mi, který z kurzů by vašim blízkým nejvíce vyhovoval nebo mi zavolejte
+                      (<strong>+420 605 477 433</strong>) a můžeme některý vybrat společně…</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grve-element grve-text vc_custom_1631953209105">
+              <form action="/api/submit" method="POST" id="gift-form">
+                <input type="hidden" name="_form" value="gift">
+                <div style="display:none;overflow:hidden;height:0;width:0;">
+                  <label>Web Site</label><input autocomplete="off" name="web_site" type="text" value="" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="first_name">Jméno <span style="color:#ee0000;">*</span></label>
+                  <input class="form-control" id="first_name" name="first_name" placeholder="Sem napište Vaše jméno..."
+                    required type="text" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="last_name">Příjmení <span style="color:#ee0000;">*</span></label>
+                  <input class="form-control" id="last_name" name="last_name" placeholder="...sem Vaše příjmení..."
+                    required type="text" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="email">Emailová adresa <span style="color:#ee0000;">*</span></label>
+                  <input class="form-control" id="email" name="email" placeholder="...sem Váš email..." required
+                    type="email" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="phone">Telefon</label>
+                  <input class="form-control" id="phone" name="phone" placeholder="...případně telefon" type="tel" />
+                </div>
+                <div class="form-group">
+                  <label class="control-label">Myslím, že by vyhovoval: <span style="color:#ee0000;">*</span></label>
+                  <div class="radio">
+                    <label><input name="club_selection" required type="radio" value="Starter Club (začátečníci)" />
+                      Starter Club (začátečníci)</label>
+                  </div>
+                  <div class="radio">
+                    <label><input name="club_selection" required type="radio" value="Explorer Club (mírně pokročilí)" />
+                      Explorer Club (mírně pokročilí)</label>
+                  </div>
+                  <div class="radio">
+                    <label><input name="club_selection" required type="radio"
+                        value="Conversation Club (praktická konverzace)" /> Conversation Club (praktická
+                      konverzace)</label>
+                  </div>
+                </div>
+                <div class="h-captcha" data-sitekey="59f6c9dc-25b4-4dc8-bd40-276e47a49ede"></div>
+                <div class="form-group" style="margin-top:1em;">
+                  <input class="button" id="gift-submit-btn" type="submit" value="Odeslat" />
+                  <span id="gift-form-status" style="margin-left:1em;display:none;"></span>
+                </div>
+              </form>
+              <script>
+                document.getElementById('gift-form').addEventListener('submit', async function (e) {
+                  e.preventDefault();
+                  const btn = document.getElementById('gift-submit-btn');
+                  const status = document.getElementById('gift-form-status');
+                  btn.disabled = true;
+                  status.style.display = 'inline';
+                  status.textContent = 'Odesílám...';
+                  try {
+                    const res = await fetch('/api/submit', { method: 'POST', body: new FormData(this) });
+                    if (res.ok) {
+                      status.textContent = 'Děkujeme! Zpráva byla odeslána.';
+                      this.reset();
+                    } else {
+                      status.textContent = 'Chyba při odesílání. Zkuste to prosím znovu.';
+                      btn.disabled = false;
+                    }
+                  } catch {
+                    status.textContent = 'Chyba sítě. Zkuste to prosím znovu.';
+                    btn.disabled = false;
+                  }
+                });
+              </script>
+            </div>
+            <div class="grve-element grve-text vc_custom_1631953433933">
+              <div class="layers-widget-column-28-65 layers-masonry-column layers-widget-column-65 span-12 last column"
+                id="layers-widget-column-28-65">
+                <div class="media image-top medium">
+                  <div class="media-body text-left">
+                    <div class="excerpt">
+                      <p>Po uhrazení vaší faktury obdržíte poukaz poštou v dárkovém balení.</p>
+                      <p><i class="Defaults-credit-card"></i> Bankovní spojení:<br />
+                        <strong>1626570018/3030 (Air Bank)</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grve-column wpb_column grve-column-1-6">
+          <div class="grve-column-wrapper"></div>
+        </div>
+      </div>
     </div>
-    <div class="radio">
-      <label><input name="club_selection" required type="radio" value="Explorer Club (mírně pokročilí)"/> Explorer Club (mírně pokročilí)</label>
-    </div>
-    <div class="radio">
-      <label><input name="club_selection" required type="radio" value="Conversation Club (praktická konverzace)"/> Conversation Club (praktická konverzace)</label>
-    </div>
+    <div class="grve-background-wrapper"></div>
   </div>
-  <div class="h-captcha" data-sitekey="59f6c9dc-25b4-4dc8-bd40-276e47a49ede"></div>
-  <div class="form-group" style="margin-top:1em;">
-    <input class="button" id="gift-submit-btn" type="submit" value="Odeslat"/>
-    <span id="gift-form-status" style="margin-left:1em;display:none;"></span>
-  </div>
-</form>
-<script>
-document.getElementById('gift-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const btn = document.getElementById('gift-submit-btn');
-  const status = document.getElementById('gift-form-status');
-  btn.disabled = true;
-  status.style.display = 'inline';
-  status.textContent = 'Odesílám...';
-  try {
-    const res = await fetch('/api/submit', { method: 'POST', body: new FormData(this) });
-    if (res.ok) {
-      status.textContent = 'Děkujeme! Zpráva byla odeslána.';
-      this.reset();
-    } else {
-      status.textContent = 'Chyba při odesílání. Zkuste to prosím znovu.';
-      btn.disabled = false;
-    }
-  } catch {
-    status.textContent = 'Chyba sítě. Zkuste to prosím znovu.';
-    btn.disabled = false;
-  }
-});
-</script>
-</div>
-<div class="grve-element grve-text vc_custom_1631953433933">
-<div class="layers-widget-column-28-65 layers-masonry-column layers-widget-column-65 span-12 last column" id="layers-widget-column-28-65">
-<div class="media image-top medium">
-<div class="media-body text-left">
-<div class="excerpt">
-<p>Po uhrazení vaší faktury obdržíte poukaz poštou v dárkovém balení.</p>
-<p><i class="Defaults-credit-card"></i> Bankovní spojení:<br/>
-<strong>1626570018/3030 (Air Bank)</strong></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div></div><div class="grve-column wpb_column grve-column-1-6"><div class="grve-column-wrapper"></div></div></div></div><div class="grve-background-wrapper"></div></div>
 </div>
