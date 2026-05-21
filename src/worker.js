@@ -187,18 +187,19 @@ async function handleEntries(request, env) {
   }
 
   const tableRows = rows.map((row, idx) => {
+    const kontakt = [
+      [esc(row.first_name), esc(row.last_name)].filter(Boolean).join(' '),
+      esc(row.street),
+      [esc(row.city), esc(row.postal_code)].filter(Boolean).join(' '),
+      esc(row.email),
+      esc(row.phone),
+    ].filter(Boolean).join('<br>');
     return `<tr>
       <td>${totalCount - offset - idx}</td>
       <td>${esc(formatPrague(row.submitted_at))}</td>
       <td>${esc(row.form_name)}</td>
-      <td>${esc(row.first_name)}</td>
-      <td>${esc(row.last_name)}</td>
-      <td>${esc(row.email)}</td>
-      <td>${esc(row.phone)}</td>
+      <td>${kontakt}</td>
       <td style="max-width:220px;white-space:pre-wrap">${esc(row.message)}</td>
-      <td>${esc(row.street)}</td>
-      <td>${esc(row.city)}</td>
-      <td>${esc(row.postal_code)}</td>
       <td>${esc(row.club_selection)}</td>
     </tr>`;
   }).join("\n");
@@ -248,8 +249,8 @@ details summary:hover{text-decoration:underline}
 <p class="meta">Celkem: <strong>${totalCount}</strong> záznamů &nbsp;·&nbsp; Stránka <strong>${page}</strong> z <strong>${totalPages}</strong> &nbsp;·&nbsp; ${pageSize} na stránku</p>
 ${paginationHtml}
 <div class="wrap"><table>
-<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>Ulice</th><th>Město</th><th>PSČ</th><th>Klub</th></tr></thead>
-<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="12" class="empty">Žádné záznamy.</td></tr>'}</tbody>
+<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Kontakt</th><th>Zpráva</th><th>Klub</th></tr></thead>
+<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="6" class="empty">Žádné záznamy.</td></tr>'}</tbody>
 </table></div>
 <div class="pg-bottom-bar">
   ${paginationHtml}
