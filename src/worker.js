@@ -76,15 +76,14 @@ async function handleSubmit(request, env) {
   const last_name      = formData.get("last_name")      || "";
   const email          = formData.get("email")          || "";
   const phone          = formData.get("phone")          || "";
-  const message        = formData.get("message")        || "";
+  const message        = formData.get("message") || formData.get("notes") || "";
   const street         = formData.get("street")         || "";
   const city           = formData.get("city")           || "";
   const postal_code    = formData.get("postal_code")    || "";
-  const notes          = formData.get("notes")          || "";
   const club_selection = formData.get("club_selection") || "";
   const form_name      = formData.get("_form")          || "contact";
 
-  const excluded = new Set(["web_site", "h-captcha-response", "_form", "first_name", "last_name", "email", "phone", "message", "street", "city", "postal_code", "notes", "club_selection"]);
+  const excluded = new Set(["web_site", "h-captcha-response", "_form", "first_name", "last_name", "email", "phone", "message", "notes", "street", "city", "postal_code", "club_selection"]);
   const rawObj = {};
   for (const [k, v] of formData.entries()) {
     if (!excluded.has(k)) rawObj[k] = v;
@@ -97,9 +96,9 @@ async function handleSubmit(request, env) {
 
   try {
     await env.DB.prepare(
-      `INSERT INTO submissions (submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection, raw_data, ip_address, user_agent)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection, JSON.stringify(rawObj), ip_address, user_agent).run();
+      `INSERT INTO submissions (submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection, raw_data, ip_address, user_agent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection, JSON.stringify(rawObj), ip_address, user_agent).run();
   } catch (err) {
     console.error("D1 insert error:", err);
     return jsonResponse({ error: "Database error" }, 500);
@@ -115,7 +114,7 @@ async function handleSubmit(request, env) {
         from: { email: "noreply@teaspoon.cz", name: "Teaspoon web" },
         reply_to: { email },
         subject: `Nový formulář: ${form_name}`,
-        content: [{ type: "text/plain", value: buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection }) }],
+        content: [{ type: "text/plain", value: buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }) }],
       }),
     });
     if (!mailRes.ok) console.error("MailChannels error:", mailRes.status, await mailRes.text());
@@ -200,7 +199,6 @@ async function handleEntries(request, env) {
       <td>${esc(row.street)}</td>
       <td>${esc(row.city)}</td>
       <td>${esc(row.postal_code)}</td>
-      <td style="max-width:180px;white-space:pre-wrap">${esc(row.notes)}</td>
       <td>${esc(row.club_selection)}</td>
     </tr>`;
   }).join("\n");
@@ -250,8 +248,8 @@ details summary:hover{text-decoration:underline}
 <p class="meta">Celkem: <strong>${totalCount}</strong> záznamů &nbsp;·&nbsp; Stránka <strong>${page}</strong> z <strong>${totalPages}</strong> &nbsp;·&nbsp; ${pageSize} na stránku</p>
 ${paginationHtml}
 <div class="wrap"><table>
-<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>Ulice</th><th>Město</th><th>PSČ</th><th>Poznámka</th><th>Klub</th></tr></thead>
-<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="13" class="empty">Žádné záznamy.</td></tr>'}</tbody>
+<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>Ulice</th><th>Město</th><th>PSČ</th><th>Klub</th></tr></thead>
+<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="12" class="empty">Žádné záznamy.</td></tr>'}</tbody>
 </table></div>
 <div class="pg-bottom-bar">
   ${paginationHtml}
@@ -299,7 +297,7 @@ function buildPagination(page, totalPages, url) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, notes, club_selection }) {
+function buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }) {
   const lines = [
     `Formulář: ${form_name}`,
     `Jméno: ${first_name} ${last_name}`,
@@ -311,7 +309,6 @@ function buildEmailBody({ form_name, first_name, last_name, email, phone, messag
   if (city)           lines.push(`Město: ${city}`);
   if (postal_code)    lines.push(`PSČ: ${postal_code}`);
   if (message)        lines.push(``, `Zpráva:`, message);
-  if (notes)          lines.push(``, `Poznámka:`, notes);
   return lines.join("\n");
 }
 

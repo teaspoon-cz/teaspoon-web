@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS submissions (
   street         TEXT,
   city           TEXT,
   postal_code    TEXT,
-  notes          TEXT,
   club_selection TEXT,
   raw_data       TEXT,
   ip_address     TEXT,
