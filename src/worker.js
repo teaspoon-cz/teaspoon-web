@@ -3,6 +3,7 @@
 //   ASSETS               — static assets binding (auto-configured via [assets] in wrangler.toml)
 //   HCAPTCHA_SECRET_KEY  — encrypted env var
 //   ADMIN_PASSWORD       — encrypted env var
+//   RESEND_API_KEY       — encrypted env var (https://resend.com)
 
 export default {
   async fetch(request, env) {
@@ -104,22 +105,25 @@ async function handleSubmit(request, env) {
     return jsonResponse({ error: "Database error" }, 500);
   }
 
-  // 5. Email via MailChannels
+  // 5. Email via Resend
   try {
-    const mailRes = await fetch("https://api.mailchannels.net/tx/v1/send", {
+    const mailRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+      },
       body: JSON.stringify({
-        personalizations: [{ to: [{ email: "radomir.cernoch@gmail.com" }] }],
-        from: { email: "noreply@teaspoon.cz", name: "Teaspoon web" },
-        reply_to: { email },
+        from: "Teaspoon web <onboarding@resend.dev>",
+        to: ["radomir.cernoch@gmail.com"],
+        reply_to: email,
         subject: `Nový formulář: ${form_name}`,
-        content: [{ type: "text/plain", value: buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }) }],
+        text: buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }),
       }),
     });
-    if (!mailRes.ok) console.error("MailChannels error:", mailRes.status, await mailRes.text());
+    if (!mailRes.ok) console.error("Resend error:", mailRes.status, await mailRes.text());
   } catch (err) {
-    console.error("MailChannels fetch error:", err);
+    console.error("Resend fetch error:", err);
   }
 
   return jsonResponse({ ok: true }, 200);
