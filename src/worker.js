@@ -188,13 +188,9 @@ async function handleEntries(request, env) {
   }
 
   const tableRows = rows.map((row, idx) => {
-    const rawFormatted = (() => {
-      try { return JSON.stringify(JSON.parse(row.raw_data || "{}"), null, 2); }
-      catch { return row.raw_data || ""; }
-    })();
     return `<tr>
       <td>${totalCount - offset - idx}</td>
-      <td>${esc(row.submitted_at)}</td>
+      <td>${esc(formatPrague(row.submitted_at))}</td>
       <td>${esc(row.form_name)}</td>
       <td>${esc(row.first_name)}</td>
       <td>${esc(row.last_name)}</td>
@@ -206,8 +202,6 @@ async function handleEntries(request, env) {
       <td>${esc(row.postal_code)}</td>
       <td style="max-width:180px;white-space:pre-wrap">${esc(row.notes)}</td>
       <td>${esc(row.club_selection)}</td>
-      <td>${esc(row.ip_address)}</td>
-      <td><details><summary>raw</summary><pre style="font-size:.75rem;background:#f5f5f5;padding:.5em;border-radius:4px;overflow:auto;max-width:400px">${esc(rawFormatted)}</pre></details></td>
     </tr>`;
   }).join("\n");
 
@@ -256,8 +250,8 @@ details summary:hover{text-decoration:underline}
 <p class="meta">Celkem: <strong>${totalCount}</strong> záznamů &nbsp;·&nbsp; Stránka <strong>${page}</strong> z <strong>${totalPages}</strong> &nbsp;·&nbsp; ${pageSize} na stránku</p>
 ${paginationHtml}
 <div class="wrap"><table>
-<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>Ulice</th><th>Město</th><th>PSČ</th><th>Poznámka</th><th>Klub</th><th>IP</th><th>Data</th></tr></thead>
-<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="15" class="empty">Žádné záznamy.</td></tr>'}</tbody>
+<thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>Ulice</th><th>Město</th><th>PSČ</th><th>Poznámka</th><th>Klub</th></tr></thead>
+<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="13" class="empty">Žádné záznamy.</td></tr>'}</tbody>
 </table></div>
 <div class="pg-bottom-bar">
   ${paginationHtml}
@@ -326,6 +320,20 @@ function jsonResponse(body, status) {
     status,
     headers: { "Content-Type": "application/json" },
   });
+}
+
+function formatPrague(isoStr) {
+  const d = new Date(isoStr);
+  if (isNaN(d)) return isoStr;
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat('sv', {
+      timeZone: 'Europe/Prague',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false,
+    }).formatToParts(d).map(({ type, value }) => [type, value])
+  );
+  return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
 }
 
 function esc(str) {
