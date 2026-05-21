@@ -1,3 +1,5 @@
 /.dev.vars
 /.wrangler
 *.tar.gz
+/_site
+/node_modules
