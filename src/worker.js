@@ -1,7 +1,7 @@
 // Required bindings (wrangler.toml + Cloudflare dashboard secrets):
 //   DB                   — D1 database named "teaspoon-forms"
 //   ASSETS               — static assets binding (auto-configured via [assets] in wrangler.toml)
-//   TURNSTILE_SECRET_KEY — encrypted env var
+//   HCAPTCHA_SECRET_KEY  — encrypted env var
 //   ADMIN_PASSWORD       — encrypted env var
 
 export default {
@@ -42,43 +42,32 @@ async function handleSubmit(request, env) {
     return jsonResponse({ ok: true }, 200);
   }
 
-  // 2. Turnstile
-  const turnstileToken = formData.get("cf-turnstile-response") || "";
-  if (!env.TURNSTILE_SECRET_KEY) {
-    console.error("Turnstile: TURNSTILE_SECRET_KEY is not set");
+  // 2. hCaptcha
+  const hcaptchaToken = formData.get("h-captcha-response") || "";
+  if (!env.HCAPTCHA_SECRET_KEY) {
+    console.error("hCaptcha: HCAPTCHA_SECRET_KEY is not set");
     return jsonResponse({ error: "Configuration error" }, 500);
   }
-  let tsData;
+  let hcData;
   try {
-    const tsBody = JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken });
-    const tsHeaders = { "Content-Type": "application/json" };
-
-    let tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v1/siteverify", {
+    const hcParams = new URLSearchParams({ secret: env.HCAPTCHA_SECRET_KEY, response: hcaptchaToken });
+    const hcRes = await fetch("https://api.hcaptcha.com/siteverify", {
       method: "POST",
-      headers: tsHeaders,
-      body: tsBody,
-      redirect: "manual",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: hcParams.toString(),
     });
-
-    // Manually follow redirect, preserving POST
-    if (tsRes.status >= 300 && tsRes.status < 400) {
-      const location = tsRes.headers.get("location");
-      console.log("Turnstile redirected to:", location);
-      tsRes = await fetch(location, { method: "POST", headers: tsHeaders, body: tsBody });
-    }
-
-    const tsText = await tsRes.text();
-    console.log("Turnstile:", tsRes.status, tsText.substring(0, 200));
-    if (!tsRes.ok) {
+    const hcText = await hcRes.text();
+    console.log("hCaptcha:", hcRes.status, hcText.substring(0, 200));
+    if (!hcRes.ok) {
       return jsonResponse({ error: "Chyba ověření" }, 500);
     }
-    tsData = JSON.parse(tsText);
+    hcData = JSON.parse(hcText);
   } catch (err) {
-    console.error("Turnstile error:", err?.message);
+    console.error("hCaptcha error:", err?.message);
     return jsonResponse({ error: "Chyba ověření" }, 500);
   }
-  if (!tsData?.success) {
-    console.error("Turnstile rejected:", JSON.stringify(tsData?.["error-codes"]));
+  if (!hcData?.success) {
+    console.error("hCaptcha rejected:", JSON.stringify(hcData?.["error-codes"]));
     return jsonResponse({ error: "Ověření se nezdařilo" }, 400);
   }
 
@@ -90,7 +79,7 @@ async function handleSubmit(request, env) {
   const message    = formData.get("message")    || "";
   const form_name  = formData.get("_form")      || "contact";
 
-  const excluded = new Set(["web_site", "cf-turnstile-response", "_form", "first_name", "last_name", "email", "phone", "message"]);
+  const excluded = new Set(["web_site", "h-captcha-response", "_form", "first_name", "last_name", "email", "phone", "message"]);
   const rawObj = {};
   for (const [k, v] of formData.entries()) {
     if (!excluded.has(k)) rawObj[k] = v;

@@ -10,16 +10,15 @@
    npx wrangler d1 execute teaspoon-forms --file=schema.sql
    ```
 
-3. **Create Turnstile widget**
-   - Cloudflare dashboard → Turnstile → Add widget
-   - Type: Managed
-   - Domain: `teaspoon.cz`
-   - Copy the **Site Key** and replace `TURNSTILE_SITE_KEY_PLACEHOLDER` in `web/kontakt/index.html`
+3. **Create hCaptcha widget**
+   - Register at hcaptcha.com → Add New Site
+   - Domain: `teaspoon.cz` (and `test.teaspoon.cz` for testing)
+   - Copy the **Site Key** and replace `HCAPTCHA_SITE_KEY_PLACEHOLDER` in `web/kontakt/index.html`
 
 4. **Set encrypted environment variables**
-   - Cloudflare Pages → your project → Settings → Environment variables
+   - Cloudflare dashboard → Workers & Pages → `teaspoon` → Settings → Environment variables
    - Add (mark as **Encrypted**):
-     - `TURNSTILE_SECRET_KEY` — the Turnstile Secret Key from step 3
+     - `HCAPTCHA_SECRET_KEY` — the hCaptcha Secret Key from step 3
      - `ADMIN_PASSWORD` — choose a strong password for `/formular/`
 
 5. **Connect repository in Cloudflare Pages**
