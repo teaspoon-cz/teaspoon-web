@@ -127,7 +127,7 @@ async function handleSubmit(request, env) {
 }
 
 // ---------------------------------------------------------------------------
-// GET /api/formular/entries?password=XXX
+// GET /api/formular/entries?password=XXX[&page=N]
 // ---------------------------------------------------------------------------
 
 async function handleEntries(request, env) {
@@ -144,11 +144,43 @@ async function handleEntries(request, env) {
   }
   if (!authorized) return jsonResponse({ error: "Unauthorized" }, 401);
 
+  const pageSize = Math.max(1, parseInt(env.ENTRIES_PAGE_SIZE || "100", 10) || 100);
+
+  let totalCount = 0;
+  try {
+    const countResult = await env.DB.prepare("SELECT COUNT(*) AS cnt FROM submissions").first();
+    totalCount = countResult?.cnt ?? 0;
+  } catch (err) {
+    console.error("D1 count error:", err);
+    return new Response("Database error", { status: 500 });
+  }
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  const rawPage = url.searchParams.get("page");
+  let page;
+  if (rawPage === null) {
+    page = 1;
+  } else {
+    const parsed = parseInt(rawPage, 10);
+    if (isNaN(parsed) || parsed < 1) page = 1;
+    else if (parsed > totalPages) page = totalPages;
+    else page = parsed;
+  }
+
+  if (rawPage !== null && String(page) !== rawPage) {
+    const redirectUrl = new URL(request.url);
+    redirectUrl.searchParams.set("page", page);
+    return Response.redirect(redirectUrl.toString(), 302);
+  }
+
+  const offset = (page - 1) * pageSize;
+
   let rows = [];
   try {
     const result = await env.DB.prepare(
-      "SELECT * FROM submissions ORDER BY submitted_at DESC LIMIT 200"
-    ).all();
+      "SELECT * FROM submissions ORDER BY submitted_at DESC LIMIT ? OFFSET ?"
+    ).bind(pageSize, offset).all();
     rows = result.results || [];
   } catch (err) {
     console.error("D1 query error:", err);
@@ -161,7 +193,7 @@ async function handleEntries(request, env) {
       catch { return row.raw_data || ""; }
     })();
     return `<tr>
-      <td>${rows.length - idx}</td>
+      <td>${totalCount - offset - idx}</td>
       <td>${esc(row.submitted_at)}</td>
       <td>${esc(row.form_name)}</td>
       <td>${esc(row.first_name)}</td>
@@ -179,6 +211,13 @@ async function handleEntries(request, env) {
     </tr>`;
   }).join("\n");
 
+  const paginationHtml = buildPagination(page, totalPages, url);
+  const jumpForm = `<form method="get" action="/api/formular/entries" class="pg-jump">
+  <input type="hidden" name="password" value="${esc(provided)}">
+  <label>Přejít na stránku: <input type="number" name="page" min="1" max="${totalPages}" value="${page}"></label>
+  <button type="submit">Přejít</button>
+</form>`;
+
   const html = `<!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -189,7 +228,7 @@ async function handleEntries(request, env) {
 *,*::before,*::after{box-sizing:border-box}
 body{font-family:system-ui,sans-serif;font-size:.875rem;margin:0;padding:1.5rem;background:#fafafa;color:#222}
 h1{margin:0 0 .5rem;font-size:1.4rem}
-.meta{color:#666;margin-bottom:1.5rem;font-size:.8rem}
+.meta{color:#666;margin-bottom:.75rem;font-size:.8rem}
 .wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;background:#fff;border:1px solid #ddd;border-radius:6px;overflow:hidden}
 th{background:#3e3f75;color:#fff;padding:.6rem .75rem;text-align:left;font-weight:600;white-space:nowrap}
@@ -198,18 +237,68 @@ tr:hover td{background:#f0f4ff}
 details summary{cursor:pointer;color:#3e3f75;font-size:.78rem}
 details summary:hover{text-decoration:underline}
 .empty{text-align:center;color:#888;padding:2rem}
+.pg{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center;padding:.5rem 0;font-size:.82rem;margin:.25rem 0}
+.pg a{color:#3e3f75;text-decoration:none;padding:.2rem .45rem;border:1px solid #c5c6e8;border-radius:3px;background:#fff}
+.pg a:hover{background:#eef}
+.pg-cur{padding:.2rem .45rem;background:#3e3f75;color:#fff;border-radius:3px;font-weight:600;border:1px solid #3e3f75}
+.pg-dots{color:#999;padding:.2rem .15rem}
+.pg-off{color:#ccc;padding:.2rem .45rem}
+.pg-bottom-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-top:.25rem}
+.pg-jump{display:flex;align-items:center;gap:.4rem;font-size:.82rem}
+.pg-jump label{white-space:nowrap}
+.pg-jump input[type=number]{width:5.5em;padding:.25rem .4rem;border:1px solid #ccc;border-radius:3px;font-size:.82rem}
+.pg-jump button{padding:.25rem .75rem;background:#3e3f75;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:.82rem}
+.pg-jump button:hover{background:#2e2f60}
 </style>
 </head>
 <body>
 <h1>Přijaté zprávy</h1>
-<p class="meta">Celkem: <strong>${rows.length}</strong> (max. 200, od nejnovějšího)</p>
+<p class="meta">Celkem: <strong>${totalCount}</strong> záznamů &nbsp;·&nbsp; Stránka <strong>${page}</strong> z <strong>${totalPages}</strong> &nbsp;·&nbsp; ${pageSize} na stránku</p>
+${paginationHtml}
 <div class="wrap"><table>
 <thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Jméno</th><th>Příjmení</th><th>Email</th><th>Telefon</th><th>Zpráva</th><th>Ulice</th><th>Město</th><th>PSČ</th><th>Poznámka</th><th>Klub</th><th>IP</th><th>Data</th></tr></thead>
 <tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="15" class="empty">Žádné záznamy.</td></tr>'}</tbody>
 </table></div>
+<div class="pg-bottom-bar">
+  ${paginationHtml}
+  ${jumpForm}
+</div>
 </body></html>`;
 
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+}
+
+function buildPagination(page, totalPages, url) {
+  if (totalPages <= 1) return '';
+
+  const pageHref = (p) => {
+    const u = new URL(url);
+    u.searchParams.set("page", p);
+    return esc(u.toString());
+  };
+  const link = (p, label) => `<a href="${pageHref(p)}">${label ?? p}</a>`;
+
+  const parts = [];
+
+  if (page > 1) parts.push(link(page - 1, '&lt;&nbsp;prev'));
+  else parts.push('<span class="pg-off">&lt;&nbsp;prev</span>');
+
+  const wStart = Math.max(1, page - 10);
+  const wEnd   = Math.min(totalPages, page + 10);
+
+  if (wStart > 1) parts.push('<span class="pg-dots">…</span>');
+
+  for (let p = wStart; p <= wEnd; p++) {
+    if (p === page) parts.push(`<span class="pg-cur">${p}</span>`);
+    else parts.push(link(p));
+  }
+
+  if (wEnd < totalPages) parts.push('<span class="pg-dots">…</span>');
+
+  if (page < totalPages) parts.push(link(page + 1, 'next&nbsp;&gt;'));
+  else parts.push('<span class="pg-off">next&nbsp;&gt;</span>');
+
+  return `<nav class="pg">${parts.join(' ')}</nav>`;
 }
 
 // ---------------------------------------------------------------------------
