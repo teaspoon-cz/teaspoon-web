@@ -13,7 +13,7 @@ export default {
         return await handleSubmit(request, env);
       }
 
-      if (request.method === "GET" && url.pathname === "/api/formular/entries") {
+      if (request.method === "GET" && url.pathname === "/api/entries") {
         return await handleEntries(request, env);
       }
 
@@ -127,7 +127,7 @@ async function handleSubmit(request, env) {
 }
 
 // ---------------------------------------------------------------------------
-// GET /api/formular/entries?password=XXX[&page=N]
+// GET /api/entries?password=XXX[&page=N]
 // ---------------------------------------------------------------------------
 
 async function handleEntries(request, env) {
@@ -206,7 +206,7 @@ async function handleEntries(request, env) {
   }).join("\n");
 
   const paginationHtml = buildPagination(page, totalPages, url);
-  const jumpForm = `<form method="get" action="/api/formular/entries" class="pg-jump">
+  const jumpForm = `<form method="get" action="/api/entries" class="pg-jump">
   <input type="hidden" name="password" value="${esc(provided)}">
   <label>Přejít na stránku: <input type="number" name="page" min="1" max="${totalPages}" value="${page}"></label>
   <button type="submit">Přejít</button>

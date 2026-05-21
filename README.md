@@ -2,7 +2,7 @@
 
 Teaspoon is a static website for [teaspoon.cz](https://teaspoon.cz).
 
-It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it validates submissions with hCaptcha, stores them in a Cloudflare D1 database, and forwards them by email via MailChannels. An optional password-protected admin view at `/formular/` lists all received submissions.
+It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it validates submissions with hCaptcha, stores them in a Cloudflare D1 database, and forwards them by email via MailChannels. An optional password-protected admin view at `/admin/` lists all received submissions.
 
 ---
 
@@ -31,7 +31,7 @@ It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it
    - Cloudflare dashboard → Workers & Pages → `teaspoon` → Settings → Environment variables
    - Add the following, marked as **Encrypted**:
      - `HCAPTCHA_SECRET_KEY` — the hCaptcha Secret Key from the hCaptcha setup above
-     - `ADMIN_PASSWORD` — a strong password for the `/formular/` admin view
+     - `ADMIN_PASSWORD` — a strong password for the `/admin/` admin view
 
 4. **Connect the repository in Cloudflare Pages**
    - Cloudflare dashboard → Workers & Pages → Create application → Pages → Connect to Git
@@ -43,7 +43,7 @@ It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it
 
 5. **Test**
    - Visit `/kontakt/` and submit the contact form; verify the success message appears
-   - Visit `/formular/`, enter the admin password, and confirm the submission shows in the table
+   - Visit `/admin/`, enter the admin password, and confirm the submission shows in the table
 
 ---
 
