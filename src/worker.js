@@ -186,7 +186,10 @@ async function handleEntries(request, env) {
     return new Response("Database error", { status: 500 });
   }
 
-  const tableRows = rows.map((row, idx) => {
+  const tableRows = [];
+  const compactCards = [];
+  rows.forEach((row, idx) => {
+    const rowNum = totalCount - offset - idx;
     const kontakt = [
       [esc(row.first_name), esc(row.last_name)].filter(Boolean).join(' '),
       esc(row.street),
@@ -194,15 +197,26 @@ async function handleEntries(request, env) {
       esc(row.email),
       esc(row.phone),
     ].filter(Boolean).join('<br>');
-    return `<tr>
-      <td>${totalCount - offset - idx}</td>
+    tableRows.push(`<tr>
+      <td>${rowNum}</td>
       <td>${esc(formatPrague(row.submitted_at))}</td>
       <td>${esc(row.form_name)}</td>
       <td>${kontakt}</td>
       <td style="max-width:220px;white-space:pre-wrap">${esc(row.message)}</td>
       <td>${esc(row.club_selection)}</td>
-    </tr>`;
-  }).join("\n");
+    </tr>`);
+    compactCards.push(
+      `<div class="cc">`
+      + `<div class="cc-hd"><strong>#${rowNum} ${esc(formatPrague(row.submitted_at))}</strong></div>`
+      + `<div><em>Formulář:</em> ${esc(row.form_name)}</div>`
+      + (row.club_selection ? `<div><em>Klub:</em> ${esc(row.club_selection)}</div>` : '')
+      + `<div><em>Kontakt:</em><br>${kontakt}</div>`
+      + (row.message ? `<div><em>Zpráva:</em><br><span class="cc-msg">${esc(row.message)}</span></div>` : '')
+      + `</div>`
+    );
+  });
+  const tableRowsHtml = tableRows.join("\n");
+  const compactCardsHtml = compactCards.join("\n");
 
   const paginationHtml = buildPagination(page, totalPages, url);
   const jumpForm = `<form method="get" action="/api/entries" class="pg-jump">
@@ -242,6 +256,15 @@ details summary:hover{text-decoration:underline}
 .pg-jump input[type=number]{width:5.5em;padding:.25rem .4rem;border:1px solid #ccc;border-radius:3px;font-size:.82rem}
 .pg-jump button{padding:.25rem .75rem;background:#3e3f75;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:.82rem}
 .pg-jump button:hover{background:#2e2f60}
+tr:nth-child(even) td{background:#f5f5fa}
+.compact{display:none}
+.cc{background:#fff;padding:.75rem;border-bottom:1px solid #eee}
+.cc:nth-child(even){background:#f5f5fa}
+.cc-hd{margin-bottom:.35rem}
+.cc>div{margin:.2rem 0}
+.cc em{color:#555}
+.cc-msg{white-space:pre-wrap}
+@media(max-width:600px){.wrap{display:none}.compact{display:block}}
 </style>
 </head>
 <body>
@@ -250,8 +273,9 @@ details summary:hover{text-decoration:underline}
 ${paginationHtml}
 <div class="wrap"><table>
 <thead><tr><th>#</th><th>Datum</th><th>Formulář</th><th>Kontakt</th><th>Zpráva</th><th>Klub</th></tr></thead>
-<tbody>${rows.length > 0 ? tableRows : '<tr><td colspan="6" class="empty">Žádné záznamy.</td></tr>'}</tbody>
+<tbody>${rows.length > 0 ? tableRowsHtml : '<tr><td colspan="6" class="empty">Žádné záznamy.</td></tr>'}</tbody>
 </table></div>
+<div class="compact">${rows.length > 0 ? compactCardsHtml : '<div class="empty">Žádné záznamy.</div>'}</div>
 <div class="pg-bottom-bar">
   ${paginationHtml}
   ${jumpForm}
