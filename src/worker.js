@@ -118,7 +118,8 @@ async function handleSubmit(request, env) {
         to: ["radomir.cernoch@gmail.com"],
         reply_to: email,
         subject: `Nový formulář: ${form_name}`,
-        text: buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }),
+        text: buildEmailText({ submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }),
+        html: buildEmailHtml({ submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }),
       }),
     });
     if (!mailRes.ok) console.error("Resend error:", mailRes.status, await mailRes.text());
@@ -327,19 +328,42 @@ function buildPagination(page, totalPages, url) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function buildEmailBody({ form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }) {
-  const lines = [
-    `Formulář: ${form_name}`,
-    `Jméno: ${first_name} ${last_name}`,
-    `Email: ${email}`,
-    `Telefon: ${phone}`,
-  ];
+function emailKontakt({ first_name, last_name, street, city, postal_code, email, phone }) {
+  return [
+    [first_name, last_name].filter(Boolean).join(' '),
+    street,
+    [city, postal_code].filter(Boolean).join(' '),
+    email,
+    phone,
+  ].filter(Boolean);
+}
+
+function buildEmailText({ submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }) {
+  const lines = [formatPrague(submitted_at), ''];
+  lines.push(`Formulář: ${form_name}`);
   if (club_selection) lines.push(`Klub: ${club_selection}`);
-  if (street)         lines.push(`Ulice: ${street}`);
-  if (city)           lines.push(`Město: ${city}`);
-  if (postal_code)    lines.push(`PSČ: ${postal_code}`);
-  if (message)        lines.push(``, `Zpráva:`, message);
-  return lines.join("\n");
+  lines.push('', 'Kontakt:');
+  emailKontakt({ first_name, last_name, street, city, postal_code, email, phone }).forEach(l => lines.push(`  ${l}`));
+  if (message) {
+    lines.push('', 'Zpráva:');
+    message.split('\n').forEach(l => lines.push(`  ${l}`));
+  }
+  return lines.join('\n');
+}
+
+function buildEmailHtml({ submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }) {
+  const kontakt = emailKontakt({ first_name, last_name, street, city, postal_code, email, phone }).map(esc).join('<br>');
+  return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="font-family:system-ui,sans-serif;font-size:.875rem;color:#222;max-width:560px;margin:0 auto;padding:1rem">
+<div style="background:#fff;padding:.75rem;border:1px solid #eee;border-radius:6px">
+  <div style="margin-bottom:.35rem"><strong>${esc(formatPrague(submitted_at))}</strong></div>
+  <div><em style="color:#555">Formulář:</em> ${esc(form_name)}</div>
+  ${club_selection ? `<div><em style="color:#555">Klub:</em> ${esc(club_selection)}</div>` : ''}
+  <div><em style="color:#555">Kontakt:</em><div style="padding-left:1em">${kontakt}</div></div>
+  ${message ? `<div><em style="color:#555">Zpráva:</em><div style="padding-left:1em;white-space:pre-wrap">${esc(message)}</div></div>` : ''}
+</div>
+</body></html>`;
 }
 
 function jsonResponse(body, status) {
