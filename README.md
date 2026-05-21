@@ -2,7 +2,7 @@
 
 Teaspoon is a static website for [teaspoon.cz](https://teaspoon.cz).
 
-It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it validates submissions with hCaptcha, stores them in a Cloudflare D1 database, and forwards them by email via MailChannels. An optional password-protected admin view at `/admin/` lists all received submissions.
+It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it validates submissions with hCaptcha, stores them in a Cloudflare D1 database, and forwards them by email via Resend. An optional password-protected admin view at `/admin/` lists all received submissions.
 
 ---
 
@@ -32,6 +32,7 @@ It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it
    - Add the following, marked as **Encrypted**:
      - `HCAPTCHA_SECRET_KEY` — the hCaptcha Secret Key from the hCaptcha setup above
      - `ADMIN_PASSWORD` — a strong password for the `/admin/` admin view
+     - `RESEND_API_KEY` — the Resend API key from the Resend setup below
 
 4. **Connect the repository in Cloudflare Pages**
    - Cloudflare dashboard → Workers & Pages → Create application → Pages → Connect to Git
@@ -44,6 +45,32 @@ It is hosted on Cloudflare Pages. A Cloudflare Worker backs the contact form: it
 5. **Test**
    - Visit `/kontakt/` and submit the contact form; verify the success message appears
    - Visit `/admin/`, enter the admin password, and confirm the submission shows in the table
+
+---
+
+## Resend Setup
+
+Resend is used to deliver notification emails when a form is submitted.
+
+1. **Create an account** at [resend.com](https://resend.com) (free tier: 3,000 emails/month).
+
+2. **Add and verify the domain**
+   - Resend dashboard → Domains → Add domain → enter `teaspoon.cz`
+   - Resend will show DNS records to add (SPF, DKIM, DMARC); add them in your DNS provider
+   - Wait for verification — the domain status must be **Verified** before emails can be sent from it
+
+3. **Create an API key**
+   - Resend dashboard → API Keys → Create API Key
+   - Name it (e.g. `teaspoon-worker`), set permission to **Sending access**
+   - Copy the key — it is shown only once
+
+4. **Add the key to Cloudflare**
+   - Cloudflare dashboard → Workers & Pages → `teaspoon` → Settings → Environment variables
+   - Add `RESEND_API_KEY` marked as **Encrypted**, paste the key from step 3
+
+5. **Set the recipient address** (optional)
+   - The recipient is configured via `CONTACT_EMAIL` in [wrangler.toml](wrangler.toml) (currently `radomir.cernoch@gmail.com`)
+   - To change it without redeploying, override it as a plain (non-encrypted) environment variable in the Cloudflare dashboard
 
 ---
 

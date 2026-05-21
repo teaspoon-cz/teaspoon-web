@@ -115,7 +115,7 @@ async function handleSubmit(request, env) {
       },
       body: JSON.stringify({
         from: "Teaspoon web <noreply@teaspoon.cz>",
-        to: ["radomir.cernoch@gmail.com"],
+        to: [env.CONTACT_EMAIL],
         reply_to: email,
         subject: `Nový formulář: ${form_name}`,
         text: buildEmailText({ submitted_at, form_name, first_name, last_name, email, phone, message, street, city, postal_code, club_selection }),
