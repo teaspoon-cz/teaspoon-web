@@ -1,3 +1,9 @@
+@import "../../web/css/block-library.min.css";
+@import "../../web/css/classic-theme-styles.css";
+@import "../../web/css/theme-options.css";
+@import "../../web/css/font-awesome.min.css";
+@import "../../web/css/ultimate-vc.min.css";
+@import "../../web/css/headings.min.css";
 @import "../../web/css/animate.min.css";
 @import "../../web/css/timeline.min.css";
 @import "../../web/css/caldera-forms-front.min.css";

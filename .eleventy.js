@@ -129,6 +129,11 @@ module.exports = function(eleventyConfig) {
     return date.toISOString().split('T')[0];
   });
 
+  eleventyConfig.addFilter("inlineCSS", (urlPath) => {
+    const filePath = path.resolve(`./web${urlPath}`);
+    return fs.readFileSync(filePath, "utf8");
+  });
+
   eleventyConfig.addAsyncShortcode("image", imageShortcode);
 
   eleventyConfig.addPassthroughCopy({ "web/css": "css" });
