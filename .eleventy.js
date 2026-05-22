@@ -118,45 +118,63 @@ module.exports = function(eleventyConfig) {
       patterns: [/^fa-/, /^is-/, /^has-/, /^wp-/, /^menu-/, /^nav-/],
     };
 
-    // Purge deferred bundle globally (shared across all pages)
-    const deferredFile = "./_site/css/bundle-deferred.min.css";
-    if (fs.existsSync(deferredFile)) {
-      const [result] = await new PurgeCSS().purge({
-        content: ["./_site/**/*.html", "./_site/**/*.js"],
-        css: [deferredFile],
-        safelist,
-      });
-      const before = fs.statSync(deferredFile).size;
-      fs.writeFileSync(deferredFile, result.css);
-      console.log(`[purgecss] bundle-deferred.min.css: ${(before/1024).toFixed(0)} KB → ${(result.css.length/1024).toFixed(0)} KB`);
-    }
-
-    // Purge critical CSS globally (must scan JS too — plugins add classes dynamically)
-    const criticalFile = "./_site/css/bundle-critical.min.css";
-    let criticalCSS = null;
-    if (fs.existsSync(criticalFile)) {
-      const [result] = await new PurgeCSS().purge({
-        content: ["./_site/**/*.html", "./_site/**/*.js"],
-        css: [criticalFile],
-        safelist,
-      });
-      const before = fs.statSync(criticalFile).size;
-      criticalCSS = result.css;
-      console.log(`[purgecss] bundle-critical.min.css: ${(before/1024).toFixed(0)} KB → ${(criticalCSS.length/1024).toFixed(0)} KB`);
-    }
-
     const jqueryFile = "./_site/js/jquery.min.js";
     const jqueryJS = fs.existsSync(jqueryFile) ? fs.readFileSync(jqueryFile, "utf8") : null;
+
+    const criticalFile = "./_site/css/bundle-critical.min.css";
+    const deferredFile = "./_site/css/bundle-deferred.min.css";
+    const hasCritical = fs.existsSync(criticalFile);
+    const hasDeferred = fs.existsSync(deferredFile);
+    const critSize = hasCritical ? fs.statSync(criticalFile).size : 0;
+    const defSize = hasDeferred ? fs.statSync(deferredFile).size : 0;
+
+    let totalCritAfter = 0, totalDefAfter = 0, critPages = 0, defPages = 0;
 
     for (const htmlFile of findHtmlFiles("./_site")) {
       let html = fs.readFileSync(htmlFile, "utf8");
       let changed = false;
 
-      if (criticalCSS && html.includes("/css/bundle-critical.min.css")) {
+      // Purge critical CSS against this page only, then inline it
+      if (hasCritical && html.includes("/css/bundle-critical.min.css")) {
+        const [result] = await new PurgeCSS().purge({
+          content: [htmlFile, "./_site/**/*.js"],
+          css: [criticalFile],
+          safelist,
+        });
+        totalCritAfter += result.css.length;
+        critPages++;
         html = html.replace(
           '<link href="/css/bundle-critical.min.css" rel="stylesheet" type="text/css" />',
-          `<style>${criticalCSS}</style>`
+          `<style>${result.css}</style>`
         );
+        changed = true;
+      }
+
+      // Purge deferred CSS against this page only, write a page-specific file
+      if (hasDeferred && html.includes("/css/bundle-deferred.min.css")) {
+        const [result] = await new PurgeCSS().purge({
+          content: [htmlFile, "./_site/**/*.js"],
+          css: [deferredFile],
+          safelist,
+        });
+        totalDefAfter += result.css.length;
+        defPages++;
+
+        const rel = path.relative(path.resolve("./_site"), path.resolve(htmlFile));
+        const slug = rel === "index.html" ? "home"
+          : rel.replace(/[/\\]index\.html$/, "").replace(/[/\\]/g, "-");
+        const pageDeferred = `./_site/css/deferred-${slug}.min.css`;
+        fs.writeFileSync(pageDeferred, result.css);
+
+        html = html
+          .replace(
+            'href="/css/bundle-deferred.min.css" as="style"',
+            `href="/css/deferred-${slug}.min.css" as="style"`
+          )
+          .replace(
+            '<link href="/css/bundle-deferred.min.css" rel="stylesheet" type="text/css" />',
+            `<link href="/css/deferred-${slug}.min.css" rel="stylesheet" type="text/css" />`
+          );
         changed = true;
       }
 
@@ -170,7 +188,12 @@ module.exports = function(eleventyConfig) {
 
       if (changed) fs.writeFileSync(htmlFile, html);
     }
-    if (criticalCSS) console.log(`[inline-css] bundle-critical.min.css inlined into all pages`);
+
+    if (critPages > 0)
+      console.log(`[purgecss] critical per-page (${critPages} pages): ${(critSize/1024).toFixed(0)}KB → avg ${(totalCritAfter/1024/critPages).toFixed(0)}KB`);
+    if (defPages > 0)
+      console.log(`[purgecss] deferred per-page (${defPages} pages): ${(defSize/1024).toFixed(0)}KB → avg ${(totalDefAfter/1024/defPages).toFixed(0)}KB`);
+    if (hasCritical) console.log(`[inline-css] bundle-critical.min.css inlined into all pages`);
   });
 
   eleventyConfig.addFilter("isoDate", (date) => {
