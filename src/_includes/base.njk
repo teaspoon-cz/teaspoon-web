@@ -362,27 +362,6 @@
   </script>
   <script id="wpb-modifications" type="text/html"></script>
 
-  <script id="movedo-grve-plugins-js-extra" type="text/javascript">
-    /* <![CDATA[ */
-    var movedo_grve_fullpage_data = { "fullpage": "0" };
-    var movedo_grve_piling_data = { "piling": "0" };
-    var movedo_grve_smoothscroll_data = { "smoothscrolling": "" };
-    var movedo_grve_data = { "quantity_buttons": "1" };
-    /* ]]> */
-  </script>
-  <script id="movedo-grve-plugins-js" src="/js/plugins.min.js" defer type="text/javascript"></script>
-  <script id="movedo-grve-main-script-js-extra" type="text/javascript">
-    /* <![CDATA[ */
-    var movedo_grve_main_data = { "siteurl": "\/wp-content\/themes\/movedo", "ajaxurl": "\/wp-admin\/admin-ajax.php", "wp_gallery_popup": "0", "popup_spinner": "1", "popup_open_speed": "slow", "device_animations": "0", "device_hover_single_tap": "0", "responsive_thershold": "1024", "back_to_top": "1", "string_back_to_top": "Back to top", "string_weeks": "Weeks", "string_days": "Days", "string_hours": "Hours", "string_minutes": "Min", "string_seconds": "Sec", "nonce_likes": "702ca81933" };
-    /* ]]> */
-  </script>
-  <script id="movedo-grve-main-script-js" src="/js/main.min.js" defer type="text/javascript"></script>
-  <script id="movedo-grve-main-script-js-after" type="text/javascript">
-    /* <![CDATA[ */
-    var screen_width = Math.max(screen.width, screen.height); var devicePixelRatio = window.devicePixelRatio ? window.devicePixelRatio : 1; document.cookie = 'resolution=' + screen_width + ',' + devicePixelRatio + ';SameSite=Lax; path=/';
-    function grveReadCookie(name) { var nameEQ = name + '='; var ca = document.cookie.split(';'); for (var i = 0; i < ca.length; i++) { var c = ca[i]; while (c.charAt(0) == ' ') c = c.substring(1, c.length); if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length); } return null; } function grvePrivacyCookieConsent(cookie_name, cookie_days) { var privacyAgreement = jQuery('.grve-privacy-agreement'); privacyAgreement.on('click', function () { var theDate = new Date(); var later = new Date(theDate.getTime() + cookie_days * 24 * 60 * 60 * 1000); document.cookie = cookie_name + '=true; SameSite=Lax; Path=/; Expires=' + later.toGMTString() + ';'; jQuery('#grve-privacy-bar').fadeOut(900); }); if (!document.cookie.match(cookie_name)) { jQuery('#grve-privacy-bar').fadeIn(900); } } function grvePrivacyPopupConsent() { var privacyPopupButton = jQuery('.grve-privacy-popup-btn'), privacyRefreshButton = jQuery('.grve-privacy-refresh-btn'), privacyPopup = jQuery('#grve-privacy-popup'), privacyOverlay = jQuery('#grve-privacy-overlay'); privacyPopupButton.on('click', function (e) { e.preventDefault(); privacyPopup.fadeIn(600, function () { jQuery(window).on('click.grve_close_privacy_popup', function (event) { if (!jQuery(event.target).closest('.grve-privacy-popup-wrapper').length) { privacyPopup.fadeOut(600, function () { jQuery(window).off('click.grve_close_privacy_popup'); }); privacyOverlay.fadeOut(600); } }); }); privacyOverlay.fadeIn(600); }); privacyRefreshButton.on('click', function () { window.location.reload(true); }); } grvePrivacyCookieConsent('grve-privacy-consent', '30'); grvePrivacyPopupConsent(); function grvePrivacyCookieSwitch(cookie_name, initial_state) { var theDate = new Date(); var oneYearLater = new Date(theDate.getTime() + 31536000000); var privacySwitch = jQuery('.' + cookie_name); privacySwitch.each(function () { if (document.cookie.match(cookie_name)) { if ('false' == grveReadCookie(cookie_name)) { this.checked = false; } else { this.checked = true; } } else { if (!initial_state) { this.checked = false; } } }); privacySwitch.on('click', function () { if (this.checked) { document.cookie = cookie_name + '=true; SameSite=Lax; Path=/; Expires=' + oneYearLater.toGMTString() + ';'; privacySwitch.each(function () { this.checked = true; }); } else { document.cookie = cookie_name + '=false; SameSite=Lax; Path=/; Expires=' + oneYearLater.toGMTString() + ';'; privacySwitch.each(function () { this.checked = false; }); } }); } grvePrivacyCookieSwitch('grve-privacy-content-gtracking', ''); grvePrivacyCookieSwitch('grve-privacy-content-gfonts', ''); grvePrivacyCookieSwitch('grve-privacy-content-gmaps', '1'); grvePrivacyCookieSwitch('grve-privacy-content-video-embeds', '1');
-    /* ]]> */
-  </script>
   <script id="ultimate-vc-addons-appear-js" src="/js/jquery-appear.min.js" defer type="text/javascript"></script>
   <script id="ultimate-vc-addons-row-bg-js" src="/js/ultimate_bg.min.js" defer type="text/javascript"></script>
   {% if hasMasonry %}
