@@ -1,6 +1,7 @@
 const Image = require("@11ty/eleventy-img");
 const lightningcss = require("lightningcss");
 const { PurgeCSS } = require("purgecss");
+const { minify } = require("terser");
 const path = require("path");
 const fs = require("fs");
 
@@ -18,6 +19,21 @@ const CSS_PAGE_FILES = [
   "vc-o-mne.css",
   "vc-clenstvi-jako-darek.css",
 ];
+
+async function buildJS() {
+  const jsDir = path.resolve("./web/js");
+  const files = fs.readdirSync(jsDir).filter(f => f.endsWith(".js") && !f.endsWith(".min.js"));
+  for (const file of files) {
+    const src = path.join(jsDir, file);
+    const out = path.join(jsDir, file.replace(/\.js$/, ".min.js"));
+    const code = fs.readFileSync(src, "utf8");
+    const result = await minify(code, { compress: true, mangle: true });
+    const before = Buffer.byteLength(code);
+    const after = Buffer.byteLength(result.code);
+    fs.writeFileSync(out, result.code);
+    console.log(`[terser] ${file}: ${(before/1024).toFixed(0)} KB → ${(after/1024).toFixed(0)} KB`);
+  }
+}
 
 function buildCSS() {
   for (const [entry, out] of CSS_BUNDLES) {
@@ -83,6 +99,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.on("eleventy.before", async () => {
     await generateBgImages();
     buildCSS();
+    await buildJS();
   });
 
   eleventyConfig.on("eleventy.after", async () => {
