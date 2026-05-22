@@ -3119,7 +3119,7 @@ ul.grve-socials li a:hover .grve-tooltip {
 .owl-controls .owl-dot {
 	display: inline-block;
 	zoom: 1;
-	*display: inline;/*IE7 life-saver */
+
 }
 
 .owl-controls .owl-dot span {

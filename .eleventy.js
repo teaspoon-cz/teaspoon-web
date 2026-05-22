@@ -1,7 +1,42 @@
 const Image = require("@11ty/eleventy-img");
+const lightningcss = require("lightningcss");
 const path = require("path");
+const fs = require("fs");
 
 const BG_IMAGES = ["cojeto.jpg", "slide_2.jpg", "betka.jpg"];
+
+const CSS_BUNDLES = [
+  ["./src/css/bundle-critical.css", "./web/css/bundle-critical.min.css"],
+  ["./src/css/bundle-deferred.css", "./web/css/bundle-deferred.min.css"],
+];
+
+const CSS_PAGE_FILES = [
+  "theme-options.css",
+  "vc-index.css",
+  "vc-kontakt.css",
+  "vc-o-mne.css",
+  "vc-clenstvi-jako-darek.css",
+];
+
+function buildCSS() {
+  for (const [entry, out] of CSS_BUNDLES) {
+    const { code } = lightningcss.bundle({
+      filename: path.resolve(entry),
+      minify: true,
+      sourceMap: false,
+    });
+    fs.writeFileSync(out, code);
+  }
+  for (const file of CSS_PAGE_FILES) {
+    const src = path.resolve(`./web/css/${file}`);
+    const { code } = lightningcss.transform({
+      filename: src,
+      code: fs.readFileSync(src),
+      minify: true,
+    });
+    fs.writeFileSync(path.resolve(`./web/css/${file.replace(".css", ".min.css")}`), code);
+  }
+}
 
 async function generateBgImages() {
   for (const filename of BG_IMAGES) {
@@ -44,7 +79,10 @@ async function imageShortcode(src, alt, sizes, fetchpriority) {
 }
 
 module.exports = function(eleventyConfig) {
-  eleventyConfig.on("eleventy.before", generateBgImages);
+  eleventyConfig.on("eleventy.before", async () => {
+    await generateBgImages();
+    buildCSS();
+  });
 
   eleventyConfig.addFilter("isoDate", (date) => {
     if (!(date instanceof Date)) return '';

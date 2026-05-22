@@ -9,6 +9,7 @@
     "@11ty/eleventy": "^3.0.0"
   },
   "dependencies": {
-    "@11ty/eleventy-img": "^6.0.4"
+    "@11ty/eleventy-img": "^6.0.4",
+    "lightningcss": "^1.32.0"
   }
 }
