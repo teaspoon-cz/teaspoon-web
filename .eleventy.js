@@ -12,7 +12,6 @@ const CSS_BUNDLES = [
 ];
 
 const CSS_PAGE_FILES = [
-  "theme-options.css",
   "vc-index.css",
   "vc-kontakt.css",
   "vc-o-mne.css",
