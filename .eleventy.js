@@ -131,9 +131,20 @@ module.exports = function(eleventyConfig) {
       console.log(`[purgecss] bundle-deferred.min.css: ${(before/1024).toFixed(0)} KB → ${(result.css.length/1024).toFixed(0)} KB`);
     }
 
-    // Read sources for inlining once
+    // Purge critical CSS globally (must scan JS too — plugins add classes dynamically)
     const criticalFile = "./_site/css/bundle-critical.min.css";
-    const criticalCSS = fs.existsSync(criticalFile) ? fs.readFileSync(criticalFile, "utf8") : null;
+    let criticalCSS = null;
+    if (fs.existsSync(criticalFile)) {
+      const [result] = await new PurgeCSS().purge({
+        content: ["./_site/**/*.html", "./_site/**/*.js"],
+        css: [criticalFile],
+        safelist,
+      });
+      const before = fs.statSync(criticalFile).size;
+      criticalCSS = result.css;
+      console.log(`[purgecss] bundle-critical.min.css: ${(before/1024).toFixed(0)} KB → ${(criticalCSS.length/1024).toFixed(0)} KB`);
+    }
+
     const jqueryFile = "./_site/js/jquery.min.js";
     const jqueryJS = fs.existsSync(jqueryFile) ? fs.readFileSync(jqueryFile, "utf8") : null;
 
@@ -141,22 +152,14 @@ module.exports = function(eleventyConfig) {
       let html = fs.readFileSync(htmlFile, "utf8");
       let changed = false;
 
-      // Per-page purge critical CSS and inline it
       if (criticalCSS && html.includes("/css/bundle-critical.min.css")) {
-        const [result] = await new PurgeCSS().purge({
-          content: [{ raw: html, extension: "html" }],
-          css: [{ raw: criticalCSS }],
-          safelist,
-        });
         html = html.replace(
           '<link href="/css/bundle-critical.min.css" rel="stylesheet" type="text/css" />',
-          `<style>${result.css}</style>`
+          `<style>${criticalCSS}</style>`
         );
-        console.log(`[inline-css] ${path.relative("./_site", htmlFile)}: ${(result.css.length/1024).toFixed(0)} KB inlined`);
         changed = true;
       }
 
-      // Inline jQuery
       if (jqueryJS && html.includes("/js/jquery.min.js")) {
         html = html.replace(
           '<script id="jquery-core-js" src="/js/jquery.min.js" type="text/javascript"></script>',
@@ -167,6 +170,7 @@ module.exports = function(eleventyConfig) {
 
       if (changed) fs.writeFileSync(htmlFile, html);
     }
+    if (criticalCSS) console.log(`[inline-css] bundle-critical.min.css inlined into all pages`);
   });
 
   eleventyConfig.addFilter("isoDate", (date) => {
