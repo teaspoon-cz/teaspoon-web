@@ -163,7 +163,7 @@ module.exports = function(eleventyConfig) {
       if (jqueryJS && html.includes("/js/jquery.min.js")) {
         html = html.replace(
           '<script id="jquery-core-js" src="/js/jquery.min.js" type="text/javascript"></script>',
-          `<script id="jquery-core-js">${jqueryJS}</script>`
+          () => `<script id="jquery-core-js">${jqueryJS}</script>`
         );
         changed = true;
       }
