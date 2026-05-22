@@ -12,6 +12,7 @@ const CSS_BUNDLES = [
 ];
 
 const CSS_PAGE_FILES = [
+  "google-fonts.css",
   "vc-index.css",
   "vc-kontakt.css",
   "vc-o-mne.css",
