@@ -1,0 +1,62 @@
+<form action="/api/submit" method="POST" id="contact-form">
+  <input type="hidden" name="_form" value="contact">
+  <div style="display:none;overflow:hidden;height:0;width:0;">
+    <label>Web Site</label><input autocomplete="off" name="web_site" type="text" value="" />
+  </div>
+  <div class="form-group">
+    <label class="control-label" for="first_name">Jméno <span
+        style="color:#ee0000;">*</span></label>
+    <input class="form-control" id="first_name" name="first_name"
+      placeholder="Sem napište Vaše jméno..." required type="text" />
+  </div>
+  <div class="form-group">
+    <label class="control-label" for="last_name">Příjmení <span
+        style="color:#ee0000;">*</span></label>
+    <input class="form-control" id="last_name" name="last_name"
+      placeholder="...sem Vaše příjmení..." required type="text" />
+  </div>
+  <div class="form-group">
+    <label class="control-label" for="email">Emailová adresa <span
+        style="color:#ee0000;">*</span></label>
+    <input class="form-control" id="email" name="email" placeholder="...sem Váš email..." required
+      type="email" />
+  </div>
+  <div class="form-group">
+    <label class="control-label" for="phone">Telefon</label>
+    <input class="form-control" id="phone" name="phone" placeholder="...případně telefon"
+      type="tel" />
+  </div>
+  <div class="form-group">
+    <label class="control-label" for="message">Váš vzkaz <span
+        style="color:#ee0000;">*</span></label>
+    <textarea class="form-control" id="message" name="message" required rows="4"></textarea>
+  </div>
+  <div class="h-captcha" data-sitekey="59f6c9dc-25b4-4dc8-bd40-276e47a49ede" data-hl="cs"></div>
+  <div class="form-group" style="margin-top:1em;">
+    <input class="button" id="submit-btn" type="submit" value="Odeslat" />
+    <span id="form-status" style="margin-left:1em;display:none;"></span>
+  </div>
+</form>
+<script>
+  document.getElementById('contact-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const status = document.getElementById('form-status');
+    btn.disabled = true;
+    status.style.display = 'inline';
+    status.textContent = 'Odesílám...';
+    try {
+      const res = await fetch('/api/submit', { method: 'POST', body: new FormData(this) });
+      if (res.ok) {
+        status.textContent = 'Děkujeme! Zpráva byla odeslána.';
+        this.reset();
+      } else {
+        status.textContent = 'Chyba při odesílání. Zkuste to prosím znovu.';
+        btn.disabled = false;
+      }
+    } catch {
+      status.textContent = 'Chyba sítě. Zkuste to prosím znovu.';
+      btn.disabled = false;
+    }
+  });
+</script>
