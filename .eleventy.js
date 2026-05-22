@@ -95,6 +95,16 @@ async function imageShortcode(src, alt, sizes, fetchpriority) {
   return Image.generateHTML(metadata, attrs);
 }
 
+function findHtmlFiles(dir) {
+  const results = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) results.push(...findHtmlFiles(fullPath));
+    else if (entry.name.endsWith(".html")) results.push(fullPath);
+  }
+  return results;
+}
+
 module.exports = function(eleventyConfig) {
   eleventyConfig.on("eleventy.before", async () => {
     await generateBgImages();
@@ -103,24 +113,59 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.on("eleventy.after", async () => {
-    const cssFiles = [
-      "./_site/css/bundle-critical.min.css",
-      "./_site/css/bundle-deferred.min.css",
-    ];
-    for (const cssFile of cssFiles) {
-      if (!fs.existsSync(cssFile)) continue;
+    const safelist = {
+      // Keep dynamically-added state/variant classes from JS
+      patterns: [/^fa-/, /^is-/, /^has-/, /^wp-/, /^menu-/, /^nav-/],
+    };
+
+    // Purge deferred bundle globally (shared across all pages)
+    const deferredFile = "./_site/css/bundle-deferred.min.css";
+    if (fs.existsSync(deferredFile)) {
       const [result] = await new PurgeCSS().purge({
         content: ["./_site/**/*.html", "./_site/**/*.js"],
-        css: [cssFile],
-        safelist: {
-          // Keep dynamically-added state/variant classes from JS
-          patterns: [/^fa-/, /^is-/, /^has-/, /^wp-/, /^menu-/, /^nav-/],
-        },
+        css: [deferredFile],
+        safelist,
       });
-      const before = fs.statSync(cssFile).size;
-      fs.writeFileSync(cssFile, result.css);
-      const after = fs.statSync(cssFile).size;
-      console.log(`[purgecss] ${path.basename(cssFile)}: ${(before/1024).toFixed(0)} KB → ${(after/1024).toFixed(0)} KB`);
+      const before = fs.statSync(deferredFile).size;
+      fs.writeFileSync(deferredFile, result.css);
+      console.log(`[purgecss] bundle-deferred.min.css: ${(before/1024).toFixed(0)} KB → ${(result.css.length/1024).toFixed(0)} KB`);
+    }
+
+    // Read sources for inlining once
+    const criticalFile = "./_site/css/bundle-critical.min.css";
+    const criticalCSS = fs.existsSync(criticalFile) ? fs.readFileSync(criticalFile, "utf8") : null;
+    const jqueryFile = "./_site/js/jquery.min.js";
+    const jqueryJS = fs.existsSync(jqueryFile) ? fs.readFileSync(jqueryFile, "utf8") : null;
+
+    for (const htmlFile of findHtmlFiles("./_site")) {
+      let html = fs.readFileSync(htmlFile, "utf8");
+      let changed = false;
+
+      // Per-page purge critical CSS and inline it
+      if (criticalCSS && html.includes("/css/bundle-critical.min.css")) {
+        const [result] = await new PurgeCSS().purge({
+          content: [{ raw: html, extension: "html" }],
+          css: [{ raw: criticalCSS }],
+          safelist,
+        });
+        html = html.replace(
+          '<link href="/css/bundle-critical.min.css" rel="stylesheet" type="text/css" />',
+          `<style>${result.css}</style>`
+        );
+        console.log(`[inline-css] ${path.relative("./_site", htmlFile)}: ${(result.css.length/1024).toFixed(0)} KB inlined`);
+        changed = true;
+      }
+
+      // Inline jQuery
+      if (jqueryJS && html.includes("/js/jquery.min.js")) {
+        html = html.replace(
+          '<script id="jquery-core-js" src="/js/jquery.min.js" type="text/javascript"></script>',
+          `<script id="jquery-core-js">${jqueryJS}</script>`
+        );
+        changed = true;
+      }
+
+      if (changed) fs.writeFileSync(htmlFile, html);
     }
   });
 
