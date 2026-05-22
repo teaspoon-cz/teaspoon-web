@@ -70,13 +70,29 @@ hasMasonry: true
                       konverzace)</label>
                   </div>
                 </div>
-                <div class="h-captcha" data-sitekey="59f6c9dc-25b4-4dc8-bd40-276e47a49ede"></div>
+                <div class="h-captcha"></div>
                 <div class="form-group" style="margin-top:1em;">
                   <input class="button" id="gift-submit-btn" type="submit" value="Odeslat" />
                   <span id="gift-form-status" style="margin-left:1em;display:none;"></span>
                 </div>
               </form>
               <script>
+                (function() {
+                  var loaded = false;
+                  document.getElementById('gift-form').addEventListener('focusin', function() {
+                    if (loaded) return;
+                    loaded = true;
+                    window._hcaptchaGiftLoad = function() {
+                      hcaptcha.render(document.querySelector('#gift-form .h-captcha'), {
+                        sitekey: '59f6c9dc-25b4-4dc8-bd40-276e47a49ede',
+                        hl: 'cs'
+                      });
+                    };
+                    var s = document.createElement('script');
+                    s.src = 'https://js.hcaptcha.com/1/api.js?onload=_hcaptchaGiftLoad&render=explicit';
+                    document.head.appendChild(s);
+                  });
+                })();
                 document.getElementById('gift-form').addEventListener('submit', async function (e) {
                   e.preventDefault();
                   const btn = document.getElementById('gift-submit-btn');
