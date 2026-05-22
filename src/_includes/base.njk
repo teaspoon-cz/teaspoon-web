@@ -37,7 +37,8 @@
     </style>
   </noscript>
   {% if hcaptcha %}
-  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>{% endif %}
+  <link rel="preconnect" href="https://js.hcaptcha.com">
+  <link rel="preconnect" href="https://newassets.hcaptcha.com" crossorigin>{% endif %}
 </head>
 
 <body class="{{ bodyClass | safe }}" data-rsssl="1" id="grve-body">

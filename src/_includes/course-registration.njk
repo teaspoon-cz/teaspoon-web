@@ -69,13 +69,29 @@
                 <label class="control-label" for="notes">Poznámka</label>
                 <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>
               </div>
-              <div class="h-captcha" data-sitekey="59f6c9dc-25b4-4dc8-bd40-276e47a49ede"></div>
+              <div class="h-captcha"></div>
               <div class="form-group" style="margin-top:1em;">
                 <input class="button" id="registration-submit-btn" type="submit" value="Odeslat" />
                 <span id="registration-form-status" style="margin-left:1em;display:none;"></span>
               </div>
             </form>
             <script>
+              (function() {
+                var loaded = false;
+                document.getElementById('registration-form').addEventListener('focusin', function() {
+                  if (loaded) return;
+                  loaded = true;
+                  window._hcaptchaRegistrationLoad = function() {
+                    hcaptcha.render(document.querySelector('#registration-form .h-captcha'), {
+                      sitekey: '59f6c9dc-25b4-4dc8-bd40-276e47a49ede',
+                      hl: 'cs'
+                    });
+                  };
+                  var s = document.createElement('script');
+                  s.src = 'https://js.hcaptcha.com/1/api.js?onload=_hcaptchaRegistrationLoad&render=explicit';
+                  document.head.appendChild(s);
+                });
+              })();
               document.getElementById('registration-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const btn = document.getElementById('registration-submit-btn');
