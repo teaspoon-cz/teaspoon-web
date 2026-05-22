@@ -1316,6 +1316,10 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 					};
 				$bgImage.each(function () {
 					function imageUrl(input) {
+						if (input.indexOf('image-set') !== -1) {
+							var m = input.match(/["']([^"']+\.jpe?g)["']/i);
+							if (m) return m[1];
+						}
 						return input.replace(/"/g,"").replace(/url\(|\)$/ig, "");
 					}
 					var image = new Image(),
@@ -1897,7 +1901,7 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 			$.each(images, function(){
 				var el = $(this),
 				image = el.css('background-image').replace(/"/g, '').replace(/url\(|\)$/ig, '');
-				if(image && image !== '' && image !== 'none')
+				if(image && image !== '' && image !== 'none' && image.indexOf('image-set') === -1)
 					images = images.add($('<img>').attr('src', image));
 				if(el.is('img'))
 					images = images.add(el);
@@ -2541,6 +2545,10 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 					GRVE.pageSettings.addSpinner( $selector );
 				}
 				function imageUrl(input) {
+					if (input.indexOf('image-set') !== -1) {
+						var m = input.match(/["']([^"']+\.jpe?g)["']/i);
+						if (m) return m[1];
+					}
 					return input.replace(/"/g,"").replace(/url\(|\)$/ig, "");
 				}
 				var image = new Image(),
