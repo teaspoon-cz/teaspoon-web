@@ -46,6 +46,11 @@ async function imageShortcode(src, alt, sizes, fetchpriority) {
 module.exports = function(eleventyConfig) {
   eleventyConfig.on("eleventy.before", generateBgImages);
 
+  eleventyConfig.addFilter("isoDate", (date) => {
+    if (!(date instanceof Date)) return '';
+    return date.toISOString().split('T')[0];
+  });
+
   eleventyConfig.addAsyncShortcode("image", imageShortcode);
 
   eleventyConfig.addPassthroughCopy({ "web/css": "css" });
