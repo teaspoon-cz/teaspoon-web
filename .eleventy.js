@@ -1,5 +1,6 @@
 const Image = require("@11ty/eleventy-img");
 const lightningcss = require("lightningcss");
+const { PurgeCSS } = require("purgecss");
 const path = require("path");
 const fs = require("fs");
 
@@ -82,6 +83,28 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.on("eleventy.before", async () => {
     await generateBgImages();
     buildCSS();
+  });
+
+  eleventyConfig.on("eleventy.after", async () => {
+    const cssFiles = [
+      "./_site/css/bundle-critical.min.css",
+      "./_site/css/bundle-deferred.min.css",
+    ];
+    for (const cssFile of cssFiles) {
+      if (!fs.existsSync(cssFile)) continue;
+      const [result] = await new PurgeCSS().purge({
+        content: ["./_site/**/*.html", "./_site/**/*.js"],
+        css: [cssFile],
+        safelist: {
+          // Keep dynamically-added state/variant classes from JS
+          patterns: [/^fa-/, /^is-/, /^has-/, /^wp-/, /^menu-/, /^nav-/],
+        },
+      });
+      const before = fs.statSync(cssFile).size;
+      fs.writeFileSync(cssFile, result.css);
+      const after = fs.statSync(cssFile).size;
+      console.log(`[purgecss] ${path.basename(cssFile)}: ${(before/1024).toFixed(0)} KB → ${(after/1024).toFixed(0)} KB`);
+    }
   });
 
   eleventyConfig.addFilter("isoDate", (date) => {
