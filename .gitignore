@@ -1,4 +1,9 @@
+# Developer tools:
 /.dev.vars
 /.wrangler
+
+# Build output:
 /_site
+
+# Build cache:
 /node_modules
