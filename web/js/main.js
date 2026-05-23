@@ -38,13 +38,6 @@ var addFeatureSpinner =  false;
 var hiddenMenuItemsAnimation = true;
 var hiddenaAreaMinWidth = 550;
 var gridEqual = true;
-var wooThumbCarouselItems = 4;
-var featureSliderHandler = true;
-
-// Animate Mask Options
-var maskLayers = 3;
-var maskColorClasses =  ['grve-bg-primary-1','grve-bg-light','grve-bg-dark'];
-
 var deviceAnimAppear =  false;
 if( 1 == movedo_grve_main_data.device_animations ) {
 	deviceAnimAppear =  true;
@@ -59,7 +52,6 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 	// ============================================================================= //
 	GRVE.documentReady = {
 		init: function(){
-			GRVE.svgAnimation.init();
 			GRVE.pageSettings.removeVideoBg();
 			GRVE.pageSettings.addVideoBg();
 			GRVE.sectionSettings.init();
@@ -75,7 +67,6 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 			GRVE.isotope.init();
 			GRVE.isotope.noIsoFilters();
 			GRVE.basicElements.init();
-			GRVE.parallaxSection.init('.grve-section.grve-bg-parallax');
 		}
 	};
 
@@ -139,39 +130,6 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 			}
 		}
 	};
-	// SVG Animation
-	GRVE.svgAnimation = {
-		init : function(){
-			if(bodyLoader){
-				return false;
-			}
-			var $svg = $('.grve-svg-icon');
-			$svg.each(function(){
-				var $icon = $(this),
-					duration = $icon.data('duration'),
-					id = $icon.attr('id'),
-					file = $icon.data('file'),
-					myVivus,
-					parentDelay = 0;
-
-					if( $icon.parents('.grve-element').hasClass('grve-animated-item') ){
-						parentDelay = $icon.parents('.grve-element').data('delay');
-					}
-
-					$icon.appear(function() {
-						setTimeout(function () {
-							myVivus = new Vivus( id, {
-								duration : duration,
-								file : file,
-								type: 'async',
-								start : 'inViewport'
-							});
-						}, parentDelay);
-					},{accX: 0, accY: 0});
-			});
-		}
-	};
-
 	// # Sticky Header
 	// ============================================================================= //
 	GRVE.stickyHeaderTypes = {
@@ -871,94 +829,7 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 				$overlay.addClass('show');
 
 				animateContent = true;
-				if( $section.hasClass('grve-with-slider') ) {
-					// Init Feature Slider
-					featureSlider();
-				} else {
-					// Play Feature Animation
-					featureAnimation( $section );
-				}
-			}
-
-			// Feature Slider
-			function featureSlider(){
-				var $slider         = $('#grve-feature-slider'),
-					pauseHover      = $slider.attr('data-slider-pause') == 'yes' ? true : '',
-					sliderSpeed     = parseInt( $slider.attr('data-slider-speed') ) ? parseInt( $slider.attr('data-slider-speed') ) : 6000,
-					transition      = $slider.attr('data-slider-transition'),
-					slidersLength   = $slider.find('.grve-slider-item').length,
-					pagination      = $slider.attr('data-pagination') != 'no' ? true : false,
-					$nextNav        = $slider.parent().find('.grve-carousel-next'),
-					$prevNav        = $slider.parent().find('.grve-carousel-prev'),
-					loop = true,
-					animateOut      = false,
-					animateIn       = false,
-					stopSlider      = false;
-
-				// Slider Trantition
-				if( transition != 'slide' ){
-					animateOut = 'carousel-' + transition + '-out';
-					animateIn = 'carousel-' + transition + '-in';
-				}
-				$slider.on('initialized.owl.carousel changed.owl.carousel',function(event){
-					var current = event.item.index,
-						$currentSlide = $(event.target).find('.grve-slider-item-wrapper').eq(current),
-						sliderColor = $currentSlide.find('.grve-slider-item').attr('data-header-color'),
-						color = 'grve-' + sliderColor;
-
-					if( !$currentSlide.length) return;
-
-					// Slider Animation
-					featureAnimation( $currentSlide );
-
-					// Set Header Color
-					if( !$('#grve-main-header').hasClass('grve-header-side') ) {
-						$('#grve-main-header').removeClass('grve-light grve-dark').addClass(color);
-					}
-
-					// Set Navigation Color
-					$('#grve-feature-section .grve-carousel-navigation').removeClass('grve-light grve-dark grve-default').addClass(color);
-					$('#grve-feature-section .owl-controls').removeClass('grve-light grve-dark grve-default').addClass(color);
-				});
-
-				if ( $slider.find('.grve-slider-item').length == 1 ) {
-					loop = false;
-				}
-
-				$slider.owlCarousel({
-					items : 1,
-					loop : loop,
-					autoplay : true,
-					autoplayTimeout : sliderSpeed,
-					autoplayHoverPause : pauseHover,
-					smartSpeed : 500,
-					dots : pagination,
-					animateOut : animateOut,
-					animateIn : animateIn,
-					itemClass : 'grve-slider-item-wrapper'
-				});
-
-				$(window).on('scroll',autoplayHandler);
-
-				function autoplayHandler(){
-					var scroll = $(window).scrollTop();
-					if( scroll > 300 && !stopSlider && featureSliderHandler ){
-						stopSlider = true;
-						$slider.trigger('stop.owl.autoplay');
-					} else if( scroll < 300 && stopSlider && featureSliderHandler ) {
-						stopSlider = false;
-						$slider.trigger('play.owl.autoplay');
-					}
-				}
-
-				// Go to the next item
-				$nextNav.on('click', function() {
-					$slider.trigger('next.owl.carousel');
-				});
-				// Go to the previous item
-				$prevNav.on('click', function() {
-					$slider.trigger('prev.owl.carousel');
-				});
+				featureAnimation( $section );
 			}
 
 			// Feature Animation
@@ -1818,95 +1689,10 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 	// ============================================================================= //
 	GRVE.basicElements = {
 		init: function(){
-			this.pieChart();
-			this.progressBars();
 			this.counter();
-			this.splitContentSlider();
-			this.testimonial();
-			this.carousel();
-			this.advancedPromo();
-			this.doubleImageText();
-			this.portfolioParallax();
 			this.animAppear();
-			this.htmlVideoPlayWhenAppear();
 			this.accordionToggle();
-			this.countdown();
 			this.hovers();
-		},
-		pieChart: function(){
-
-			$('.grve-chart-number').each(function() {
-				var $element  = $(this),
-					delay     = $element.parent().data('delay') !== '' ? parseInt( $element.parent().data('delay') ) : 0,
-					size      = $element.data('pie-size'),
-					chartSize = '130';
-				if( size == 'small' ){
-					chartSize = '100';
-				}
-				if( size == 'large' ){
-					chartSize = '160';
-				}
-
-				$element.css({ 'width' : chartSize, 'height' : chartSize, 'line-height' : chartSize + 'px' });
-
-				if( $element.parents('.grve-modal-element').length ){
-					$('.grve-modal-popup').on( 'grve_open_modal', function(){
-						GRVE.basicElements.pieChartInit( $element, chartSize );
-					});
-				} else {
-					$element.appear(function() {
-						setTimeout(function () {
-							GRVE.basicElements.pieChartInit( $element, chartSize );
-						}, delay);
-					});
-				}
-			});
-
-		},
-		pieChartInit: function( $element, size ){
-
-			var activeColor = $element.data('pie-active-color') !== '' ? $element.data('pie-active-color') : 'rgba(0,0,0,1)',
-				pieColor    = $element.data('pie-color') !== '' ? $element.data('pie-color') : 'rgba(0,0,0,0.1)',
-				pieLineCap  = $element.data('pie-line-cap') !== '' ? $element.data('pie-line-cap') : 'round',
-				lineSize    = $element.data('pie-line-size') !== '' ? $element.data('pie-line-size') : '6',
-				chartSize   = size;
-
-
-			$element.easyPieChart({
-				barColor: activeColor,
-				trackColor: pieColor,
-				scaleColor: false,
-				lineCap: pieLineCap,
-				lineWidth: lineSize,
-				animate: 1500,
-				size: chartSize
-			});
-		},
-		progressBars: function(){
-			$('.grve-progress-bar').each(function() {
-
-				var $element  = $(this);
-				if( $element.parents('.grve-modal-element').length ){
-					$('.grve-modal-popup').on( 'grve_open_modal', function(){
-						GRVE.basicElements.progressBarsInit( $element );
-					});
-				} else {
-					$element.appear(function() {
-						GRVE.basicElements.progressBarsInit( $element );
-					});
-				}
-			});
-		},
-		progressBarsInit: function( $element ){
-			var val = $element.attr('data-value'),
-				percentage = $('<span class="grve-percentage">'+ val + '%'+'</span>');
-
-			$element.find('.grve-bar-line').animate({ width: val + '%' }, 1600);
-			if( $element.parent().hasClass('grve-style-1') ) {
-				percentage.appendTo($element.find('.grve-bar')).animate({ left: val + '%' }, 1600);
-			} else {
-				percentage.appendTo($element.find('.grve-bar-title'));
-			}
 		},
 		counter: function(){
 			if( bodyLoader === true ){
@@ -1931,268 +1717,6 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 					setTimeout(function () {
 						counter.start();
 					}, delay);
-				});
-			});
-		},
-		splitContentSlider: function(){
-
-			var $element = $('.grve-slit-content-slider');
-
-			$element.each(function(){
-
-				var $slider = $(this),
-					$dots = $slider.parents('.grve-split-content').find('.grve-slider-dots'),
-					sliderSpeed = ( parseInt( $slider.attr('data-slider-speed') ) ) ? parseInt( $slider.attr('data-slider-speed') ) : 3000,
-					transition = $slider.attr('data-slider-transition'),
-					loop = $slider.attr('data-slider-loop') != 'no' ? true : false,
-					autoPlay = $slider.attr('data-slider-autoplay') != 'no' ? true : false,
-					autoHeight = $slider.attr('data-slider-autoheight') == 'yes' ? true : false,
-					animateOut = false,
-					animateIn = false;
-
-				// Slider Trantition
-				if( $slider.parents('.grve-slider').hasClass('grve-layout-2') || 'fade' == transition ){
-					animateOut = 'carousel-fade-out';
-					animateIn = 'carousel-fade-in';
-				}
-
-				if ( $slider.find('.grve-slider-item').length == 1 ) {
-					loop = false;
-				}
-
-				// Slider Init
-				$slider.owlCarousel({
-					items : 1,
-					loop : loop,
-					autoplay : autoPlay,
-					autoplayTimeout : sliderSpeed,
-					autoplayHoverPause : false,
-					smartSpeed : 500,
-					dots : true,
-					animateOut : animateOut,
-					dotsContainer : $dots,
-					animateIn : animateIn,
-					autoHeight : autoHeight,
-					itemClass : 'grve-slider-item-wrapper'
-				});
-
-				$slider.parents('.grve-slider').css('visibility','visible');
-
-			});
-
-		},
-		testimonial: function(){
-
-			var $element = $('.grve-testimonial.grve-carousel-element');
-
-			$element.each(function(){
-				var $testimonial = $(this),
-					sliderSpeed = ( parseInt( $testimonial.attr('data-slider-speed') ) ) ? parseInt( $testimonial.attr('data-slider-speed') ) : 3000,
-					pagination = $testimonial.attr('data-pagination') != 'no' ? true : false,
-					paginationSpeed = ( parseInt( $testimonial.attr('data-pagination-speed') ) ) ? parseInt( $testimonial.attr('data-pagination-speed') ) : 400,
-					transition = $testimonial.attr('data-slider-transition'),
-					autoHeight = $testimonial.attr('data-slider-autoheight') == 'yes' ? true : false,
-					autoPlay = $testimonial.attr('data-slider-autoplay') != 'no' ? true : false,
-					sliderPause = $testimonial.attr('data-slider-pause') == 'yes' ? true : false,
-					loop = true,
-					animateOut = false,
-					animateIn = false;
-
-				// Testimonial Trantition
-				if( $testimonial.hasClass('grve-layout-2') || 'fade' == transition ){
-					animateOut = 'carousel-fade-out';
-					animateIn = 'carousel-fade-in';
-				}
-				if ( $testimonial.find('.grve-testimonial-element').length == 1 ) {
-					loop = false;
-				}
-
-				// Testimonial Init
-				$testimonial.owlCarousel({
-					items : 1,
-					loop : loop,
-					autoplay : autoPlay,
-					autoplayTimeout : sliderSpeed,
-					autoplayHoverPause : sliderPause,
-					smartSpeed : 500,
-					dots : pagination,
-					animateOut : animateOut,
-					animateIn : animateIn,
-					autoHeight : autoHeight,
-					itemClass : 'grve-testimonial-item-wrapper'
-				});
-
-				// Fixed for Carousel middle content
-				if( $testimonial.parents('.grve-section').hasClass('grve-middle-content') ){
-					var smallDelay;
-					GRVE.basicElements.fixMiddleCarousel( $testimonial );
-					$testimonial.parents('.grve-section').data('plugin_columnSize').reCalculate();
-					$(window).on('resize',function(){
-						window.clearTimeout(smallDelay);
-						smallDelay = window.setTimeout(function () {
-							GRVE.basicElements.fixMiddleCarousel( $testimonial );
-						}, 300);
-					});
-				}
-
-				$testimonial.css('visibility','visible');
-
-			});
-		},
-		carousel: function(){
-
-			var $element = $('.grve-carousel-element');
-
-			$element.each(function(){
-
-				var $carousel = $(this),
-					$nextNav = $carousel.parents('.grve-carousel').find('.grve-carousel-next'),
-					$prevNav = $carousel.parents('.grve-carousel').find('.grve-carousel-prev'),
-					sliderSpeed = ( parseInt( $carousel.attr('data-slider-speed') ) ) ? parseInt( $carousel.attr('data-slider-speed') ) : 3000,
-					pagination = $carousel.attr('data-pagination') != 'no' ? true : false,
-					paginationSpeed = ( parseInt( $carousel.attr('data-pagination-speed') ) ) ? parseInt( $carousel.attr('data-pagination-speed') ) : 400,
-					autoHeight = $carousel.attr('data-slider-autoheight') == 'yes' ? true : false,
-					autoPlay = $carousel.attr('data-slider-autoplay') != 'no' ? true : false,
-					sliderPause = $carousel.attr('data-slider-pause') == 'yes' ? true : false,
-					loop = $carousel.attr('data-slider-loop') != 'no' ? true : false,
-					itemNum = parseInt( $carousel.attr('data-items')),
-					tabletLandscapeNum = $carousel.attr('data-items-tablet-landscape') ? parseInt( $carousel.attr('data-items-tablet-landscape')) : 3,
-					tabletPortraitNum = $carousel.attr('data-items-tablet-portrait') ? parseInt( $carousel.attr('data-items-tablet-portrait')) : 3,
-					mobileNum = $carousel.attr('data-items-mobile') ? parseInt( $carousel.attr('data-items-mobile')) : 1,
-					gap = $carousel.parents('.grve-carousel').hasClass('grve-with-gap') && !isNaN( $carousel.data('gutter-size') ) ? Math.abs( $carousel.data('gutter-size') ) : 0,
-					padding = $carousel.parents('.grve-carousel').hasClass('grve-with-gap') && $carousel.parents('.grve-section').hasClass('grve-fullwidth') && !isNaN( $carousel.data('gutter-size') ) ? Math.abs( $carousel.data('gutter-size') ) : 0;
-
-				if ( $carousel.find('.grve-carousel-item').length == 1 ) {
-					loop = false;
-				}
-
-				// Carousel Init
-				$carousel.owlCarousel({
-					loop : loop,
-					autoplay : autoPlay,
-					autoplayTimeout : sliderSpeed,
-					autoplayHoverPause : sliderPause,
-					smartSpeed : 500,
-					dots : pagination,
-					responsive : {
-						0 : {
-							items : mobileNum
-						},
-						768 : {
-							items : tabletPortraitNum
-						},
-						1024 : {
-							items : tabletLandscapeNum
-						},
-						1200 : {
-							items : itemNum
-						}
-					},
-					margin : gap,
-					stagePadding : padding,
-					itemClass : 'grve-carousel-item-wrapper'
-				});
-
-				// Fixed for Carousel middle content
-				if( $carousel.parents('.grve-section').hasClass('grve-middle-content') ){
-					var smallDelay;
-					GRVE.basicElements.fixMiddleCarousel( $carousel );
-					$carousel.parents('.grve-section').data('plugin_columnSize').reCalculate();
-					$(window).on('resize',function(){
-						window.clearTimeout(smallDelay);
-						smallDelay = window.setTimeout(function () {
-							GRVE.basicElements.fixMiddleCarousel( $carousel );
-						}, 300);
-					});
-				}
-
-				$carousel.css('visibility','visible');
-
-				// Go to the next item
-				$nextNav.on('click', function() {
-					$carousel.trigger('next.owl.carousel');
-				});
-				// Go to the previous item
-				$prevNav.on('click', function() {
-					$carousel.trigger('prev.owl.carousel');
-				});
-
-			});
-		},
-		fixMiddleCarousel : function( $element ){
-			$element.css({ 'width' : '0' });
-			var $column = $element.parents('.grve-column-wrapper'),
-				columnW = $column.width() - 1,
-				owl = $element.data('owlCarousel');
-			$element.css({ 'width' : columnW });
-			owl.onResize();
-		},
-		advancedPromo: function(){
-			var $item = $('.grve-expandable-info');
-			$item.each(function(){
-				var $that         = $(this),
-					$wrapper      = $that.parents('.grve-section'),
-					$content      = $that.find('.grve-expandable-info-content'),
-					paddingTop    = parseInt( $wrapper.css('padding-top') ),
-					paddingBottom = parseInt( $wrapper.css('padding-bottom') );
-
-				$wrapper.addClass('grve-pointer-cursor');
-				$wrapper.on('click',function(){
-
-					var headerHeight   = $('#grve-header').length && $('#grve-header').data('sticky') != 'none' ? $('#grve-main-header').outerHeight() : 0,
-						fieldBarHeight = $('.grve-fields-bar').length ? $('.grve-fields-bar').outerHeight() : 0,
-						offset         = $(this).offset().top,
-						distance       = offset - ( headerHeight + fieldBarHeight );
-
-					if( $content.is(":visible") ){
-						$content.slideUp( 600, function(){
-							$content.removeClass('show');
-						});
-					} else {
-
-						$('html,body').animate({
-							scrollTop: distance
-						}, 600,function(){
-							$content.slideDown( function(){
-								$content.addClass('show');
-								return;
-							});
-						});
-					}
-				});
-				$wrapper.mouseenter(function() {
-					$(this).css({ 'padding-top' : paddingTop + 40, 'padding-bottom' : paddingBottom + 40 });
-				});
-				$wrapper.mouseleave(function() {
-					$(this).css({ 'padding-top' : paddingTop, 'padding-bottom' : paddingBottom });
-				});
-			});
-		},
-		doubleImageText: function(){
-			var $el = $('.grve-double-image-text'),
-				$paraller = $el.find('.grve-paraller');
-
-			imagesLoaded( $el, function() {
-				$paraller.paraller({
-					wrapper : '.grve-paraller-wrapper',
-					invert : false,
-					tabletL : [1200, true],
-					tabletP : [1023, true],
-					mobileL : [767, false]
-				});
-			});
-		},
-		portfolioParallax: function(){
-			var $el = $('.grve-portfolio-movedo-style'),
-				$paraller = $el.find('.grve-paraller');
-
-			imagesLoaded( $el, function() {
-				$paraller.paraller({
-					wrapper : '.grve-paraller-wrapper',
-					invert : false,
-					tabletL : [1200, true],
-					tabletP : [1023, true],
-					mobileL : [767, false]
 				});
 			});
 		},
@@ -2286,18 +1810,6 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 				});
 			}
 		},
-		htmlVideoPlayWhenAppear: function(){
-			var $video = $('.grve-embed-video');
-			$video.each(function(){
-				var $that = $(this);
-				$that[0].pause();
-				$that.appear(function(){
-					if( $that[0].autoplay ){
-						$that[0].play();
-					}
-				},{accX: 0, accY: -150});
-			});
-		},
 		accordionToggle: function(){
 			$('.grve-accordion-wrapper.grve-action-toggle li .grve-title-wrapper').on('click', function() {
 
@@ -2341,52 +1853,6 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 				}
 			});
 		},
-		countdown: function(){
-			$('.grve-countdown').each(function() {
-				var $this        = $(this),
-					finalDate    = $this.data('countdown'),
-					numbersSize  = $this.data('numbers-size'),
-					textSize     = $this.data('text-size'),
-					numbersColor = $this.data('numbers-color'),
-					textColor    = $this.data('text-color'),
-					countdownItems = '',
-					text = '',
-					countdownFormat = $this.data('countdown-format').split('|');
-
-				$.each( countdownFormat, function( index, value ) {
-					switch (value) {
-						case 'w':
-							text = movedo_grve_main_data.string_weeks;
-							break;
-						case 'D':
-						case 'd':
-						case 'n':
-							text = movedo_grve_main_data.string_days;
-							break;
-						case 'H':
-							text = movedo_grve_main_data.string_hours;
-							break;
-						case 'M':
-							text = movedo_grve_main_data.string_minutes;
-							break;
-						case 'S':
-							text = movedo_grve_main_data.string_seconds;
-							break;
-						default:
-							text = '';
-					}
-					countdownItems += '<div class="grve-countdown-item">';
-					countdownItems += '<div class="grve-number grve-' + numbersSize + ' grve-text-' + numbersColor + '">%' + value + '</div>';
-					countdownItems += '<span class="grve-' + textSize + ' grve-text-' + textColor + '">' + text + '</span>';
-					countdownItems += '</div>';
-
-				});
-
-				$this.countdown(finalDate, function(event) {
-					$this = $(this).html(event.strftime( countdownItems ));
-				});
-			});
-		},
 		hovers: function(){
 			var $hoverItem = $('.grve-image-hover');
 			if( isMobile.any() && 0 == movedo_grve_main_data.device_hover_single_tap ) {
@@ -2413,19 +1879,6 @@ if( 1 == movedo_grve_main_data.device_animations ) {
 					$(this).toggleClass('hover');
 				});
 			}
-		}
-	};
-
-	// # Parallax Section
-	// ============================================================================= //
-	GRVE.parallaxSection = {
-		init : function( section ){
-			var $section = $(section);
-			imagesLoaded( $(section), function() {
-				$(section).bgParallax({
-					elClass : '.grve-html5-bg-video, .grve-bg-image'
-				});
-			});
 		}
 	};
 
