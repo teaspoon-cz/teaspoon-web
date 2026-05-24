@@ -129,6 +129,7 @@ module.exports = function(eleventyConfig) {
     const defSize = hasDeferred ? fs.statSync(deferredFile).size : 0;
 
     let totalCritAfter = 0, totalDefAfter = 0, critPages = 0, defPages = 0;
+    let totalPageStyleBefore = 0, totalPageStyleAfter = 0, pageStylePages = 0;
 
     for (const htmlFile of findHtmlFiles("./_site")) {
       let html = fs.readFileSync(htmlFile, "utf8");
@@ -178,6 +179,22 @@ module.exports = function(eleventyConfig) {
         changed = true;
       }
 
+      // Purge page-specific inlined CSS (marked with data-src during template render)
+      const pageStyleMatch = html.match(/<style data-src="[^"]*">([\s\S]*?)<\/style>/);
+      if (pageStyleMatch) {
+        const [full, cssContent] = pageStyleMatch;
+        const [result] = await new PurgeCSS().purge({
+          content: [{ raw: html, extension: 'html' }, "./_site/**/*.js"],
+          css: [{ raw: cssContent }],
+          safelist,
+        });
+        totalPageStyleBefore += cssContent.length;
+        totalPageStyleAfter += result.css.length;
+        pageStylePages++;
+        html = html.replace(full, `<style>${result.css}</style>`);
+        changed = true;
+      }
+
       if (jqueryJS && html.includes("/js/jquery.min.js")) {
         html = html.replace(
           '<script id="jquery-core-js" src="/js/jquery.min.js" type="text/javascript"></script>',
@@ -194,6 +211,8 @@ module.exports = function(eleventyConfig) {
     if (defPages > 0)
       console.log(`[purgecss] deferred per-page (${defPages} pages): ${(defSize/1024).toFixed(0)}KB → avg ${(totalDefAfter/1024/defPages).toFixed(0)}KB`);
     if (hasCritical) console.log(`[inline-css] bundle-critical.min.css inlined into all pages`);
+    if (pageStylePages > 0)
+      console.log(`[purgecss] page-styles (${pageStylePages} pages): avg ${(totalPageStyleBefore/1024/pageStylePages).toFixed(1)}KB → avg ${(totalPageStyleAfter/1024/pageStylePages).toFixed(1)}KB`);
 
     // Remove the shared bundles — every page now references its own per-page version
     if (hasCritical) fs.unlinkSync(criticalFile);
