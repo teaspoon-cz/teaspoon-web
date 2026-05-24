@@ -194,6 +194,10 @@ module.exports = function(eleventyConfig) {
     if (defPages > 0)
       console.log(`[purgecss] deferred per-page (${defPages} pages): ${(defSize/1024).toFixed(0)}KB → avg ${(totalDefAfter/1024/defPages).toFixed(0)}KB`);
     if (hasCritical) console.log(`[inline-css] bundle-critical.min.css inlined into all pages`);
+
+    // Remove the shared bundles — every page now references its own per-page version
+    if (hasCritical) fs.unlinkSync(criticalFile);
+    if (hasDeferred) fs.unlinkSync(deferredFile);
   });
 
   eleventyConfig.addFilter("isoDate", (date) => {
