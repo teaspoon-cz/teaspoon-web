@@ -107,6 +107,7 @@ function findHtmlFiles(dir) {
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.on("eleventy.before", async () => {
+    fs.rmSync("./_site", { recursive: true, force: true });
     await generateBgImages();
     buildCSS();
     await buildJS();

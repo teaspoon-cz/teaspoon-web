@@ -2,7 +2,7 @@
   "name": "teaspoon",
   "version": "1.0.0",
   "scripts": {
-    "build": "eleventy --clean",
+    "build": "eleventy",
     "dev": "eleventy --serve"
   },
   "devDependencies": {
