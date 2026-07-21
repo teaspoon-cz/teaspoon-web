@@ -89,3 +89,4 @@ GitHub is used as the source repository that Cloudflare Pages pulls from and dep
 3. **Connect to Cloudflare Pages** (see step 4 in Cloudflare Setup above) — select the repository you just created.
 
 4. **Deploy on push** — every `git push` to `main` will automatically trigger a new Cloudflare Pages deployment. No additional CI configuration is needed.
+
