@@ -12,3 +12,6 @@
 .spacer-6a0da93ec612d,.spacer-6a0da93ec6298{height:520px}
 .spacer-6a0da93ec66ee{height:400px}
 .spacer-6a0da93ec6298{height:350px}
+@media (max-width: 767px) {
+  .vc_custom_1630628940330 { background-position: 75% center !important; }
+}
