@@ -2084,11 +2084,11 @@
     #grve-top-bar .grve-language>li>ul,
     #grve-top-bar .grve-top-bar-menu ul.sub-menu {
       background-color: #010e52;
-      color: #f9ffe8;
+      color: #fffff4;
     }
 
     #grve-top-bar a {
-      color: #f9ffe8;
+      color: #fffff4;
     }
 
     #grve-top-bar a:hover {
@@ -4146,7 +4146,7 @@
     .grve-anchor-menu,
     #grve-safebutton-area,
     #grve-bottom-bar {
-      background-color: #f9ffe8;
+      background-color: #fffff4;
       color: #3d3d3d;
     }
 
