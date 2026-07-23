@@ -2018,7 +2018,7 @@
     }
 
     a:hover {
-      color: #3e3f75;
+      color: #010e52;
     }
 
     .grve-container,
@@ -2083,12 +2083,12 @@
     #grve-top-bar .grve-wrapper,
     #grve-top-bar .grve-language>li>ul,
     #grve-top-bar .grve-top-bar-menu ul.sub-menu {
-      background-color: #3e3f75;
-      color: #fefbf7;
+      background-color: #010e52;
+      color: #f9ffe8;
     }
 
     #grve-top-bar a {
-      color: #fefbf7;
+      color: #f9ffe8;
     }
 
     #grve-top-bar a:hover {
@@ -2128,7 +2128,7 @@
     #grve-header .grve-main-menu .grve-wrapper>ul>li.current-menu-ancestor>a,
     #grve-header .grve-main-menu .grve-wrapper>ul>li:hover>a,
     .grve-header-element>a:hover {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-header .grve-main-menu.grve-menu-type-button .grve-wrapper>ul>li.current-menu-item>a span,
@@ -2138,7 +2138,7 @@
 
     #grve-header .grve-main-menu.grve-menu-type-button .grve-wrapper>ul>li:hover>a span,
     #grve-header .grve-main-menu.grve-menu-type-button .grve-wrapper>ul>li.active>a span {
-      border-color: #af1b1d;
+      border-color: #a20802;
     }
 
     #grve-header .grve-main-menu.grve-menu-type-underline .grve-wrapper>ul>li>a .grve-item:after {
@@ -2147,7 +2147,7 @@
 
     #grve-header .grve-main-menu.grve-menu-type-underline .grve-wrapper>ul>li:hover>a .grve-item:after,
     #grve-header .grve-main-menu.grve-menu-type-underline .grve-wrapper>ul>li.active>a .grve-item:after {
-      background-color: #af1b1d;
+      background-color: #a20802;
     }
 
     #grve-header .grve-main-menu .grve-wrapper>ul>li ul {
@@ -2396,11 +2396,11 @@
     #grve-header.grve-sticky-header #grve-main-header #grve-main-menu .grve-wrapper>ul>li.current-menu-ancestor>a,
     #grve-header.grve-sticky-header #grve-main-header #grve-main-menu .grve-wrapper>ul>li.active>a,
     #grve-header.grve-sticky-header #grve-main-header .grve-header-element>a:hover {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-header.grve-sticky-header #grve-main-header .grve-safe-btn-icon {
-      fill: #af1b1d;
+      fill: #a20802;
     }
 
     #grve-header.grve-sticky-header #grve-main-menu.grve-menu-type-button .grve-wrapper>ul>li.current-menu-item>a span,
@@ -2458,7 +2458,7 @@
     }
 
     #grve-movedo-sticky-header .grve-safe-btn-icon {
-      fill: #af1b1d;
+      fill: #a20802;
     }
 
     #grve-movedo-sticky-header .grve-main-menu .grve-wrapper>ul>li.grve-current>a,
@@ -2468,7 +2468,7 @@
     #grve-movedo-sticky-header .grve-main-menu .grve-wrapper>ul>li.current-menu-ancestor>a,
     #grve-movedo-sticky-header .grve-main-menu .grve-wrapper>ul>li.active>a,
     #grve-movedo-sticky-header .grve-header-element>a:hover {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-movedo-sticky-header .grve-main-menu.grve-menu-type-button .grve-wrapper>ul>li:hover>a span {
@@ -2614,7 +2614,7 @@
     }
 
     #grve-safebutton-area .grve-close-button-wrapper a:hover {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-responsive-header #grve-main-responsive-header {
@@ -2713,11 +2713,11 @@
 
     #grve-hidden-menu ul.grve-menu li.open>a .grve-arrow:after,
     #grve-hidden-menu ul.grve-menu li.open>a .grve-arrow:before {
-      background-color: #af1b1d;
+      background-color: #a20802;
     }
 
     #grve-hidden-menu.grve-slide-menu ul.grve-menu li>.grve-arrow:hover {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-theme-wrapper .grve-header-responsive-elements form,
@@ -2732,11 +2732,11 @@
     #grve-hidden-menu ul.grve-menu>li.current-menu-ancestor>a,
     #grve-hidden-menu ul.grve-menu li.current-menu-item>a,
     #grve-hidden-menu ul.grve-menu li.open>a {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-hidden-menu .grve-close-btn {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-hidden-menu ul.grve-menu li a,
@@ -2757,7 +2757,7 @@
     }
 
     #grve-responsive-header .grve-header-element>a:hover {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-responsive-header .grve-safe-btn-icon {
@@ -2765,7 +2765,7 @@
     }
 
     #grve-responsive-header .grve-safe-btn-icon:hover {
-      fill: #af1b1d;
+      fill: #a20802;
     }
 
     .grve-spinner:not(.custom):before {
@@ -2786,7 +2786,7 @@
     }
 
     .grve-spinner:not(.custom):before {
-      border-top-color: #3e3f75;
+      border-top-color: #010e52;
     }
 
     .grve-isotope .grve-spinner:before {
@@ -2845,12 +2845,12 @@
 
     ::-moz-selection {
       color: #ffffff;
-      background: #3e3f75;
+      background: #010e52;
     }
 
     ::selection {
       color: #ffffff;
-      background: #3e3f75;
+      background: #010e52;
     }
 
     h1,
@@ -2869,7 +2869,7 @@
     .grve-heading-hover-color:hover,
     p.grve-dropcap:first-letter,
     #reply-title:hover {
-      color: #3e3f75;
+      color: #010e52;
     }
 
     .grve-blog .grve-blog-item:not(.grve-style-2) .grve-post-title.grve-post-title-hover:hover,
@@ -2884,7 +2884,7 @@
     blockquote>p:before,
     .grve-filter.grve-filter-style-classic ul li:hover,
     .grve-filter.grve-filter-style-classic ul li.selected {
-      color: #3e3f75;
+      color: #010e52;
     }
 
     #grve-theme-wrapper .grve-widget.grve-social li a.grve-outline:hover,
@@ -2902,8 +2902,8 @@
     .wpcf7-form input[type='radio']:not(:checked)+.wpcf7-list-item-label:after,
     .wpcf7-form input[type='checkbox']:checked+.wpcf7-list-item-label:after,
     .wpcf7-form input[type='checkbox']:not(:checked)+.wpcf7-list-item-label:after {
-      background-color: #3e3f75;
-      border-color: #3e3f75;
+      background-color: #010e52;
+      border-color: #010e52;
       color: #ffffff;
     }
 
@@ -2933,18 +2933,18 @@
     .grve-column.grve-headings-primary-1 h6,
     .grve-column.grve-headings-primary-1 .grve-heading-color,
     .grve-split-content .grve-headings-primary-1.grve-media-wrapper .grve-title {
-      color: #3e3f75;
+      color: #010e52;
     }
 
     .grve-text-primary-1,
     #grve-theme-wrapper .grve-text-hover-primary-1:hover,
     #grve-theme-wrapper a.grve-text-hover-primary-1:hover,
     #grve-theme-wrapper a .grve-text-hover-primary-1:hover {
-      color: #3e3f75;
+      color: #010e52;
     }
 
     .grve-text-primary-1.grve-svg-icon {
-      stroke: #3e3f75;
+      stroke: #010e52;
     }
 
     #grve-theme-wrapper .grve-bg-primary-1,
@@ -2953,35 +2953,35 @@
     #grve-theme-wrapper a .grve-bg-hover-primary-1:hover,
     #grve-theme-wrapper a:hover .grve-bg-hover-primary-1,
     .grve-filter.grve-filter-style-button.grve-filter-color-primary-1 ul li.selected {
-      background-color: #3e3f75;
-      border-color: #3e3f75;
+      background-color: #010e52;
+      border-color: #010e52;
       color: #ffffff;
     }
 
     #grve-theme-wrapper a.grve-btn-line.grve-bg-primary-1 {
       background-color: transparent;
-      border-color: #3e3f75;
-      color: #3e3f75;
+      border-color: #010e52;
+      color: #010e52;
     }
 
     #grve-theme-wrapper a.grve-btn-line.grve-bg-hover-primary-1:hover {
-      background-color: #3e3f75;
-      border-color: #3e3f75;
+      background-color: #010e52;
+      border-color: #010e52;
       color: #ffffff;
     }
 
     #grve-theme-wrapper .grve-menu-type-button.grve-primary-1>a .grve-item,
     #grve-theme-wrapper .grve-menu-type-button.grve-hover-primary-1>a:hover .grve-item {
-      background-color: #3e3f75;
+      background-color: #010e52;
       color: #ffffff;
     }
 
     #grve-theme-wrapper .has-primary-1-color {
-      color: #3e3f75;
+      color: #010e52;
     }
 
     #grve-theme-wrapper .has-primary-1-background-color {
-      background-color: #3e3f75;
+      background-color: #010e52;
     }
 
     .grve-headings-primary-2 h1,
@@ -2999,18 +2999,18 @@
     .grve-column.grve-headings-primary-2 h6,
     .grve-column.grve-headings-primary-2 .grve-heading-color,
     .grve-split-content .grve-headings-primary-2.grve-media-wrapper .grve-title {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     .grve-text-primary-2,
     #grve-theme-wrapper .grve-text-hover-primary-2:hover,
     #grve-theme-wrapper a.grve-text-hover-primary-2:hover,
     #grve-theme-wrapper a .grve-text-hover-primary-2:hover {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     .grve-text-primary-2.grve-svg-icon {
-      stroke: #af1b1d;
+      stroke: #a20802;
     }
 
     #grve-theme-wrapper .grve-bg-primary-2,
@@ -3019,35 +3019,35 @@
     #grve-theme-wrapper a .grve-bg-hover-primary-2:hover,
     #grve-theme-wrapper a:hover .grve-bg-hover-primary-2,
     .grve-filter.grve-filter-style-button.grve-filter-color-primary-2 ul li.selected {
-      background-color: #af1b1d;
-      border-color: #af1b1d;
+      background-color: #a20802;
+      border-color: #a20802;
       color: #ffffff;
     }
 
     #grve-theme-wrapper a.grve-btn-line.grve-bg-primary-2 {
       background-color: transparent;
-      border-color: #af1b1d;
-      color: #af1b1d;
+      border-color: #a20802;
+      color: #a20802;
     }
 
     #grve-theme-wrapper a.grve-btn-line.grve-bg-hover-primary-2:hover {
-      background-color: #af1b1d;
-      border-color: #af1b1d;
+      background-color: #a20802;
+      border-color: #a20802;
       color: #ffffff;
     }
 
     #grve-theme-wrapper .grve-menu-type-button.grve-primary-2>a .grve-item,
     #grve-theme-wrapper .grve-menu-type-button.grve-hover-primary-2>a:hover .grve-item {
-      background-color: #af1b1d;
+      background-color: #a20802;
       color: #ffffff;
     }
 
     #grve-theme-wrapper .has-primary-2-color {
-      color: #af1b1d;
+      color: #a20802;
     }
 
     #grve-theme-wrapper .has-primary-2-background-color {
-      background-color: #af1b1d;
+      background-color: #a20802;
     }
 
     .grve-headings-primary-3 h1,
@@ -4146,7 +4146,7 @@
     .grve-anchor-menu,
     #grve-safebutton-area,
     #grve-bottom-bar {
-      background-color: #fefbf7;
+      background-color: #f9ffe8;
       color: #3d3d3d;
     }
 
@@ -4203,7 +4203,7 @@
     #grve-content .grve-read-more:after,
     #grve-content .more-link:after,
     .grve-blog-large .grve-blog-item.sticky .grve-blog-item-inner:after {
-      border-color: #3e3f75;
+      border-color: #010e52;
     }
 
     #grve-content .widget .grve-widget-title {
@@ -4222,7 +4222,7 @@
     }
 
     .grve-widget.grve-social li a.grve-outline:hover {
-      border-color: #3e3f75;
+      border-color: #010e52;
     }
 
     .widget a:not(.grve-outline):not(.grve-btn) {
@@ -4231,7 +4231,7 @@
 
     .widget:not(.grve-social) a:not(.grve-outline):not(.grve-btn):hover,
     .widget.widget_nav_menu li.open>a {
-      color: #3e3f75;
+      color: #010e52;
     }
 
     #grve-post-bar .grve-post-bar-item:not(.grve-post-navigation),
@@ -4416,8 +4416,8 @@
 
     #grve-theme-wrapper .widget.widget_tag_cloud a:hover,
     #grve-theme-wrapper #grve-sidearea .widget.widget_tag_cloud a:hover {
-      background-color: #3e3f75;
-      border-color: #3e3f75;
+      background-color: #010e52;
+      border-color: #010e52;
       color: #ffffff;
     }
 
@@ -4426,8 +4426,8 @@
     }
 
     #grve-footer .grve-widget-area .widget.widget_tag_cloud a:hover {
-      background-color: #3e3f75;
-      border-color: #3e3f75;
+      background-color: #010e52;
+      border-color: #010e52;
       color: #ffffff;
     }
 
@@ -6185,7 +6185,7 @@
     .grve-portfolio-details-btn.grve-btn:not(.grve-custom-btn) {
       -webkit-border-radius: 3px;
       border-radius: 3px;
-      background-color: #3e3f75;
+      background-color: #010e52;
       color: #ffffff;
     }
     .grve-modal input[type='submit']:not(.grve-custom-btn):hover,
@@ -6197,7 +6197,7 @@
     .woocommerce-cart .wc-proceed-to-checkout a.checkout-button:hover,
     #grve-theme-wrapper .grve-search button[type='submit']:hover,
     .grve-portfolio-details-btn.grve-btn:not(.grve-custom-btn):hover {
-      background-color: #af1b1d;
+      background-color: #a20802;
       color: #ffffff;
     }
     #grve-related-post .grve-related-title,
@@ -6214,3 +6214,14 @@
       -webkit-border-radius: 3px !important;
       border-radius: 3px !important;
     }
+
+.grve-image.circle img {
+  border-radius: 50% !important;
+}
+
+.grve-element.grve-text ul li {
+  margin-bottom: 0.5em;
+}
+.grve-element.grve-text ul li:last-child {
+  margin-bottom: 0;
+}
