@@ -181,7 +181,7 @@
             <div class="grve-container">
               <div class="grve-bar-content grve-left-side">
                 <div class="grve-copyright">
-                  <p>© 2021 Teaspoon Club</p>
+                  <p>© 2026 Teaspoon Club</p>
                 </div>
               </div>
               <div class="grve-bar-content grve-right-side">
@@ -288,65 +288,6 @@
           </div>
         </div>
       </div>
-      <div class="grve-modal grve-dark-cursor" id="grve-login-modal">
-        <div class="grve-modal-wrapper">
-          <div class="grve-modal-content">
-            <div class="grve-modal-item">
-              <div class="grve-login-modal">
-                <!-- Login form -->
-                <div class="grve-login-form grve-login-form-item grve-align-center">
-                  <div class="grve-login-form-title grve-h3 grve-with-line grve-align-center">Login to Teaspoon Club:
-                    angličtina pro seniory</div>
-                  <form action="/" id="grve_login_form" method="post">
-                    <div class="grve-form-field">
-                      <input class="grve-form-control required" name="grve_user_login" placeholder="Username *"
-                        type="text" />
-                    </div>
-                    <div class="grve-form-field">
-                      <input class="grve-form-control required" id="grve_user_pass" name="grve_user_pass"
-                        placeholder="Password *" type="password" />
-                    </div>
-                    <div class="grve-form-field">
-                      <input name="action" type="hidden" value="movedo_grve_login_user" />
-                      <button class="btn grve-fullwidth-btn" data-loading-text="Loading..." type="submit">Login</button>
-                      <a class="grve-reset-password-form-btn grve-link-text grve-text-hover-primary-1" href="#">Lost
-                        Password?</a>
-                    </div>
-                    <input id="_movedo_grve_nonce_login" name="_movedo_grve_nonce_login" type="hidden"
-                      value="b5f49f7e43" /><input name="_wp_http_referer" type="hidden" value="/" />
-                  </form>
-                  <div class="grve-form-errors grve-align-center grve-text-primary-1 grve-link-text"></div>
-                </div>
-                <!-- Lost Password form -->
-                <div class="grve-reset-password-form grve-login-form-item grve-align-center">
-                  <div class="grve-login-form-title grve-h3 grve-with-line grve-align-center">Reset Password</div>
-                  <span class="grve-login-form-description grve-link-text">Enter the username or e-mail you used in your
-                    profile. A password reset link will be sent to you by email.</span>
-                  <form action="/" id="grve_reset_password_form" method="post">
-                    <div class="grve-form-field">
-                      <input class="grve-form-control required" id="grve_user_or_email" name="grve_user_or_email"
-                        placeholder="Username or E-mail" type="text" />
-                    </div>
-                    <div class="grve-form-field">
-                      <input name="action" type="hidden" value="movedo_grve_reset_password_user" />
-                      <button class="btn grve-fullwidth-btn" data-loading-text="Loading..." type="submit">Get new
-                        password</button>
-                    </div>
-                    <div class="grve-form-field">
-                      <span class="grve-login-link grve-link-text">Already have an account? <a
-                          class="grve-text-hover-primary-1 grve-login-form-btn" href="#">Login</a>
-                      </span>
-                    </div>
-                    <input id="_movedo_grve_nonce_password" name="_movedo_grve_nonce_password" type="hidden"
-                      value="b5f49f7e43" /><input name="_wp_http_referer" type="hidden" value="/" />
-                  </form>
-                  <div class="grve-form-errors grve-align-center grve-text-primary-1 grve-link-text"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="grve-back-top">
         <div class="grve-arrow-wrapper grve-circle grve-wrapper-color">
           <i class="grve-icon-nav-up-small grve-back-top-icon"></i>
@@ -394,12 +335,6 @@
   <script id="cf-validator-js" src="/js/parsley.min.js" defer type="text/javascript"></script>
   <script id="cf-validator-i18n-js" src="/js/cs.min.js" defer type="text/javascript"></script>
   {% endif %}
-  <script id="movedo-grve-login-js-extra" type="text/javascript">
-    /* <![CDATA[ */
-    var grve_form = { "ajaxurl": "\/wp-admin\/admin-ajax.php", "redirect_url": "" };
-    /* ]]> */
-  </script>
-  <script id="movedo-grve-login-js" src="/js/ajax-login.min.js" defer type="text/javascript"></script>
   {% if hasForm %}
   <script> setTimeout(function () { window.Parsley.setLocale('cs'); }, 2000);</script>
   {% endif %}
