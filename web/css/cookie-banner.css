@@ -1,0 +1,179 @@
+#teaspoon-cookie-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+#teaspoon-cookie-banner.tcb-hidden {
+  display: none;
+}
+
+#teaspoon-cookie-banner .tcb-panel {
+  background: #010e52;
+  color: #fffff4;
+  padding: 24px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 16px 16px 0 0;
+  max-width: 640px;
+  width: 100%;
+  margin-bottom: 0;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+#teaspoon-cookie-banner .tcb-emoji {
+  font-size: 22px;
+}
+
+#teaspoon-cookie-banner h3 {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fffff4;
+}
+
+#teaspoon-cookie-banner p {
+  margin: 0 0 18px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  font-family: "Segoe UI", sans-serif;
+  color: #fffff4;
+}
+
+#teaspoon-cookie-banner a {
+  color: #ffb3ab;
+  text-decoration: underline;
+}
+
+#teaspoon-cookie-banner .tcb-btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#teaspoon-cookie-banner button {
+  font-family: "Segoe UI", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  padding: 11px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+#teaspoon-cookie-banner button:hover {
+  opacity: 0.85;
+}
+
+#teaspoon-cookie-banner .tcb-btn-accept {
+  background: #a20802;
+  color: #fffff4;
+  flex: 1;
+  min-width: 140px;
+}
+
+#teaspoon-cookie-banner .tcb-btn-ghost {
+  background: transparent;
+  color: #fffff4;
+  border: 1.5px solid #fffff4;
+}
+
+#teaspoon-cookie-banner .tcb-settings-panel {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  display: none;
+}
+
+#teaspoon-cookie-banner .tcb-settings-panel.tcb-open {
+  display: block;
+}
+
+#teaspoon-cookie-banner .tcb-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+
+#teaspoon-cookie-banner .tcb-toggle-row small {
+  display: block;
+  opacity: 0.75;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+#teaspoon-cookie-banner .tcb-switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+#teaspoon-cookie-banner .tcb-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+#teaspoon-cookie-banner .tcb-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  transition: 0.2s;
+}
+
+#teaspoon-cookie-banner .tcb-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fffff4;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+#teaspoon-cookie-banner input:checked + .tcb-slider {
+  background-color: #a20802;
+}
+
+#teaspoon-cookie-banner input:checked + .tcb-slider:before {
+  transform: translateX(18px);
+}
+
+#teaspoon-cookie-banner input:disabled + .tcb-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#teaspoon-cookie-banner .tcb-save-row {
+  margin-top: 14px;
+}
+
+#teaspoon-cookie-banner .tcb-save-row button {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  #teaspoon-cookie-banner .tcb-panel {
+    padding: 18px;
+    border-radius: 12px 12px 0 0;
+  }
+}
