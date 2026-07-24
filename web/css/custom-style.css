@@ -6225,3 +6225,11 @@
 .grve-element.grve-text ul li:last-child {
   margin-bottom: 0;
 }
+
+.grve-inline-link {
+  color: inherit;
+  text-decoration: underline;
+}
+.grve-inline-link:hover {
+  color: #a20802;
+}
