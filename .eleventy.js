@@ -5,7 +5,7 @@ const { minify } = require("terser");
 const path = require("path");
 const fs = require("fs");
 
-const BG_IMAGES = ["cojeto.jpg", "slide_2.jpg", "betka.jpg"];
+const BG_IMAGES = ["cojeto.jpg", "slide_2.jpg", "betka.jpg", "kvetiny.jpg"];
 
 const CSS_BUNDLES = [
   ["./src/css/bundle-critical.css", "./web/css/bundle-critical.min.css"],

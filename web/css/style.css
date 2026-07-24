@@ -49,7 +49,7 @@ p {
 }
 
 .button:hover {
-	background-color: #af1b1d;
+	background-color: #a20802;
 }
 
 .justify {
@@ -57,18 +57,18 @@ p {
 }
 
 .starter {
-    background-color: #3e3f75;
-	color: #fefbf7;
+    background-color: #010e52;
+	color: #fffff4;
 }
 
 .explorer {
-    border-color: #af1b1d;
-    color: #fefbf7;
+    border-color: #a20802;
+    color: #fffff4;
 }
 
 .conversation {
     border-color: #82671c;
-    color: #fefbf7;
+    color: #fffff4;
 }
 
 .standard-club, .intensive-club {
@@ -153,12 +153,12 @@ blockquote footer,
 } 
 
 #grve-theme-wrapper input[type="submit"]:hover {
-	background-color:#af1b1d;
+	background-color:#a20802;
 	color:#fff;
 }
 	
 h2, h3, h4 {
-	color: #3e3f75;
+	color: #010e52;
 	letter-spacing:0.05em;
 }
 
