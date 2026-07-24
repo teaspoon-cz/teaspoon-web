@@ -1,0 +1,114 @@
+<!--
+  Cookie consent banner — parked for later, not currently included anywhere.
+
+  To re-enable:
+  1. Rename this file to cookie-banner.njk
+  2. Add {% include "cookie-banner.njk" %} back into base.njk, right before
+     <!-- end #grve-theme-content --> (where this block used to live)
+  3. Add back to src/css/bundle-deferred.css:
+       @import "../../web/css/cookie-banner.css";
+     (that CSS file was left in place in web/css/, untouched)
+-->
+<div class="tcb-hidden" id="teaspoon-cookie-banner">
+  <div class="tcb-panel">
+    <h3><span class="tcb-emoji">🍪</span> Cookies?</h3>
+    <p>
+      K čaji tu máme i sušenky/cookies. Cookies používáme pro měření návštěvnosti (Google Analytics) a
+      zobrazování relevantní reklamy (Meta/Facebook Pixel). Kliknutím na „Přijmout vše" souhlasíte s jejich
+      používáním. Více informací najdete v našich <a href="/gdpr/">zásadách ochrany osobních údajů</a>.
+    </p>
+    <div class="tcb-btn-row">
+      <button class="tcb-btn-accept" type="button" onclick="teaspoonCookieConsent.acceptAll()">Přijmout vše</button>
+      <button class="tcb-btn-ghost" type="button" onclick="teaspoonCookieConsent.essentialOnly()">Pouze nezbytné</button>
+      <button class="tcb-btn-ghost" type="button" onclick="teaspoonCookieConsent.toggleSettings()">Nastavení</button>
+    </div>
+    <div class="tcb-settings-panel" id="tcb-settings">
+      <div class="tcb-toggle-row">
+        <div>Nezbytné cookies<br><small>Nutné pro fungování webu</small></div>
+        <label class="tcb-switch">
+          <input type="checkbox" checked disabled>
+          <span class="tcb-slider"></span>
+        </label>
+      </div>
+      <div class="tcb-toggle-row">
+        <div>Analytické cookies<br><small>Google Analytics — pomáhá nám pochopit návštěvnost</small></div>
+        <label class="tcb-switch">
+          <input type="checkbox" id="tcb-analytics">
+          <span class="tcb-slider"></span>
+        </label>
+      </div>
+      <div class="tcb-toggle-row">
+        <div>Marketingové cookies<br><small>Meta Pixel — pro cílenou reklamu</small></div>
+        <label class="tcb-switch">
+          <input type="checkbox" id="tcb-marketing">
+          <span class="tcb-slider"></span>
+        </label>
+      </div>
+      <div class="tcb-save-row">
+        <button class="tcb-btn-accept" type="button" onclick="teaspoonCookieConsent.saveSettings()">Uložit nastavení</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var STORAGE_KEY = "teaspoonCookieConsent";
+
+    function getConsent() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setConsent(state) {
+      state.timestamp = Date.now();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+      hideBanner();
+    }
+
+    function hideBanner() {
+      document.getElementById("teaspoon-cookie-banner").classList.add("tcb-hidden");
+    }
+
+    function showBannerIfNeeded() {
+      if (!getConsent()) {
+        document.getElementById("teaspoon-cookie-banner").classList.remove("tcb-hidden");
+      }
+    }
+
+    window.teaspoonCookieConsent = {
+      acceptAll: function () {
+        setConsent({ necessary: true, analytics: true, marketing: true });
+      },
+      essentialOnly: function () {
+        setConsent({ necessary: true, analytics: false, marketing: false });
+      },
+      saveSettings: function () {
+        setConsent({
+          necessary: true,
+          analytics: document.getElementById("tcb-analytics").checked,
+          marketing: document.getElementById("tcb-marketing").checked,
+        });
+      },
+      toggleSettings: function () {
+        document.getElementById("tcb-settings").classList.toggle("tcb-open");
+      },
+      // For future use: gate analytics/marketing scripts with this, e.g.
+      // if (teaspoonCookieConsent.has("analytics")) { load GA }
+      has: function (category) {
+        var consent = getConsent();
+        return !!(consent && consent[category]);
+      },
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", showBannerIfNeeded);
+    } else {
+      showBannerIfNeeded();
+    }
+  })();
+</script>
